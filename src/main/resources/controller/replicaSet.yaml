@@ -1,0 +1,8 @@
+apiVersion: openshift
+kind: ReplicaSet
+properties:
+  default: default
+handlers:
+- cn.abcsys.devops.v3.handler.replicaset.RsApplicationHandler
+- cn.abcsys.devops.v3.handler.replicaset.RsConfigurationHandler
+- cn.abcsys.devops.v3.handler.utils.StatusHandler

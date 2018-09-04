@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.deployer.dao.InstanceCoreMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.deployer.model.InstanceCore" >
+    <id column="instance_core_id" property="instanceCoreId" jdbcType="INTEGER" />
+    <result column="instance_name" property="instanceName" jdbcType="VARCHAR" />
+    <result column="instance_rename" property="instanceRename" jdbcType="VARCHAR" />
+    <result column="instance_proerties" property="instanceProerties" jdbcType="VARCHAR" />
+    <result column="instance_namespace" property="instanceNamespace" jdbcType="VARCHAR" />
+    <result column="instance_type" property="instanceType" jdbcType="VARCHAR" />
+    <result column="instance_create_datetime" property="instanceCreateDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_delete_datetime" property="instanceDeleteDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_current_status" property="instanceCurrentStatus" jdbcType="VARCHAR" />
+    <result column="instance_image" property="instanceImage" jdbcType="VARCHAR" />
+    <result column="instance_image_tag" property="instanceImageTag" jdbcType="VARCHAR" />
+    <result column="instance_cpu" property="instanceCpu" jdbcType="VARCHAR" />
+    <result column="instance_memory" property="instanceMemory" jdbcType="VARCHAR" />
+    <result column="instance_request_cpu" property="instanceRequestCpu" jdbcType="VARCHAR" />
+    <result column="instance_request_memory" property="instanceRequestMemory" jdbcType="VARCHAR" />
+    <result column="instance_network" property="instanceNetwork" jdbcType="VARCHAR" />
+    <result column="instance_image_pull_secret" property="instanceImagePullSecret" jdbcType="VARCHAR" />
+    <result column="app_id" property="appId" jdbcType="INTEGER" />
+    <result column="app_name" property="appName" jdbcType="VARCHAR" />
+    <result column="cluster_name" property="clusterName" jdbcType="VARCHAR" />
+    <result column="host_name" property="hostName" jdbcType="VARCHAR" />
+    <result column="host_ip" property="hostIp" jdbcType="VARCHAR" />
+    <result column="container_status" property="containerStatus" jdbcType="VARCHAR" />
+    <result column="container_name" property="containerName" jdbcType="VARCHAR" />
+    <result column="image_name" property="imageName" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="cmd" property="cmd" jdbcType="VARCHAR" />
+    <result column="application_runtime_id" property="applicationRuntimeId" jdbcType="INTEGER" />
+    <result column="application_tenant_id" property="applicationTenantId" jdbcType="INTEGER" />
+    <result column="component_id" property="componentId" jdbcType="INTEGER" />
+    <result column="instance_replica" property="instanceReplica" jdbcType="INTEGER" />
+    <result column="master_port" property="masterPort" jdbcType="VARCHAR" />
+    <result column="master_type" property="masterType" jdbcType="VARCHAR" />
+
+  </resultMap>
+  <sql id="Base_Column_List" >
+    instance_core_id, instance_name, instance_rename, instance_proerties, instance_namespace,
+    instance_type, instance_create_datetime, instance_delete_datetime, instance_current_status,
+    instance_image, instance_image_tag, instance_cpu, instance_memory, instance_request_cpu,
+    instance_request_memory, instance_network, instance_image_pull_secret, app_id, app_name,
+    cluster_name, host_name, host_ip, container_status, container_name, image_name, ip,
+    cmd, application_runtime_id, application_tenant_id,component_id,instance_replica,master_port,master_type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from instance_core
+    where instance_core_id = #{instanceCoreId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByUniqueRename" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from instance_core
+    where instance_rename = #{instanceRename,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByMultipleFields" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from instance_core
+    where instance_core_id > 0
+    <if test="record.instanceNamespace != null and record.instanceNamespace !=''" >
+      and instance_namespace like '%${record.instanceNamespace}%'
+    </if>
+    <if test="record.instanceRename != null and record.instanceRename !=''" >
+      and instance_rename like '%${record.instanceRename}%'
+    </if>
+    <if test="record.clusterName != null and record.clusterName!=''" >
+      and cluster_name like '%${record.clusterName}%'
+    </if>
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name like '%${record.imageName}%'
+    </if>
+    <if test="record.instanceImage != null">
+      and instance_image = #{record.instanceImage,jdbcType=VARCHAR}
+    </if>
+    <if test="record.instanceNetwork != null and record.instanceNetwork != ''" >
+      and instance_network like '%${record.instanceNetwork}%'
+    </if>
+    <if test="record.appName != null and record.appName != ''" >
+      and app_name like '%${record.appName}%'
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+    order by instance_core_id DESC
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllContainersMultipleFields" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from instance_core
+    where instance_core_id > 0
+    <if test="record.instanceNamespace != null and record.instanceNamespace !=''" >
+      and instance_namespace like '%${record.instanceNamespace}%'
+    </if>
+    <if test="record.instanceRename != null and record.instanceRename !=''" >
+      and instance_rename like '%${record.instanceRename}%'
+    </if>
+    <if test="record.clusterName != null and record.clusterName!=''" >
+      and cluster_name like '%${record.clusterName}%'
+    </if>
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name like '%${record.imageName}%'
+    </if>
+    <if test="record.instanceImage != null">
+      and instance_image = #{record.instanceImage,jdbcType=VARCHAR}
+    </if>
+    <if test="record.instanceNetwork != null and record.instanceNetwork != ''" >
+      and instance_network like '%${record.instanceNetwork}%'
+    </if>
+    <if test="record.appName != null and record.appName != ''" >
+      and app_name like '%${record.appName}%'
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+    order by instance_core_id DESC
+  </select>
+
+  <select id="selectCountByMultipleFields" resultType="java.lang.Integer">
+    select count(*)
+    from instance_core
+    where instance_core_id > 0
+    <if test="record.instanceNamespace != null and record.instanceNamespace !=''" >
+      and instance_namespace like '%${record.instanceNamespace}%'
+    </if>
+    <if test="record.instanceRename != null and record.instanceRename !=''" >
+      and instance_rename like '%${record.instanceRename}%'
+    </if>
+    <if test="record.clusterName != null and record.clusterName!=''" >
+      and cluster_name like '%${record.clusterName}%'
+    </if>
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name like '%${record.imageName}%'
+    </if>
+    <if test="record.instanceImage != null">
+      and instance_image = #{record.instanceImage,jdbcType=VARCHAR}
+    </if>
+    <if test="record.instanceNetwork != null and record.instanceNetwork != ''" >
+      and instance_network like '%${record.instanceNetwork}%'
+    </if>
+    <if test="record.appName != null and record.appName != ''" >
+      and app_name like '%${record.appName}%'
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectCountRunningByMultipleFields" resultType="java.lang.Integer">
+    select count(*)
+    from instance_core
+    where instance_core_id > 0
+    <if test="record.instanceNamespace != null and record.instanceNamespace !=''" >
+      and instance_namespace like '%${record.instanceNamespace}%'
+    </if>
+    <if test="record.instanceRename != null and record.instanceRename !=''" >
+      and instance_rename like '%${record.instanceRename}%'
+    </if>
+    <if test="record.clusterName != null and record.clusterName!=''" >
+      and cluster_name like '%${record.clusterName}%'
+    </if>
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name like '%${record.imageName}%'
+    </if>
+    <if test="record.instanceImage != null">
+      and instance_image = #{record.instanceImage,jdbcType=VARCHAR}
+    </if>
+    <if test="record.instanceNetwork != null and record.instanceNetwork != ''" >
+      and instance_network like '%${record.instanceNetwork}%'
+    </if>
+    <if test="record.appName != null and record.appName != ''" >
+      and app_name like '%${record.appName}%'
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+    and container_status = 1
+  </select>
+
+
+  <select id="selectDistinctAppNameCountByInstanceNetwork" resultType="java.lang.Integer">
+    select count( DISTINCT  app_name)
+    from instance_core
+    where instance_core_id>0
+    <if test="record.instanceNamespace !=null and record.instanceNamespace!=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    <if test="record.instanceNetwork != null and record.instanceNetwork!=''" >
+      and instance_network = #{record.instanceNetwork,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectDistinctAppNameByInstanceNetwork" resultMap="BaseResultMap">
+    select DISTINCT app_id,app_name
+    from instance_core
+    where instance_core_id>0
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''" >
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    <if test="record.instanceNetwork != null and record.instanceNetwork != ''" >
+      and instance_network = #{record.instanceNetwork,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectContainerNameByInstanceNetwork" resultMap="BaseResultMap">
+    select  *
+    from instance_core
+    where instance_core_id > 0
+    <if test="record.instanceNetwork != null and record.instanceNetwork != ''" >
+      and instance_network = #{record.instanceNetwork,jdbcType=VARCHAR}
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectCountByInstanceNetwork" resultType="java.lang.Integer">
+    select count( *)
+    from instance_core
+    where instance_core_id > 0
+    <if test="record.instanceNetwork != null and record.instanceNetwork != ''" >
+      and instance_network = #{record.instanceNetwork,jdbcType=VARCHAR}
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectNetworksTypeCountsByNetwork" resultType="java.lang.Integer">
+    select  count(DISTINCT  instance_network)
+    from instance_core
+    where instance_core_id > 0
+    <if test="record.instanceNetwork != null and record.instanceNetwork != ''" >
+      and instance_network like '%${record.instanceNetwork}%'
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectNetworksByNetwork" resultMap="BaseResultMap">
+    select DISTINCT  instance_network
+    from instance_core
+    where instance_core_id > 0
+    <if test="record.instanceNetwork != null and record.instanceNetwork != ''" >
+      and instance_network like '%${record.instanceNetwork}%'
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    and instance_current_status ="created"
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectInstanceCountsByImageName" resultType="java.lang.Integer">
+    select count(*)
+    from instance_core
+    where instance_core_id >0
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name = #{record.imageName ,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectAppCountsByImageName" resultType="java.lang.Integer">
+    select count( DISTINCT app_name)
+    from instance_core
+    where instance_core_id >0
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name = #{record.imageName ,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectDistinctAppNameByImageName" resultMap="BaseResultMap">
+    select DISTINCT app_id,app_name
+    from instance_core
+    where instance_core_id >0
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name = #{record.imageName ,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectDistinctImageNameByImageName" resultMap="BaseResultMap">
+    select DISTINCT image_name,application_runtime_id
+    from instance_core
+    where instance_core_id >0
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name like '%${record.imageName}%'
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.instanceNamespace !=null  and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    and instance_current_status ="created"
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllInfoNameByImageName" resultMap="BaseResultMap">
+    select *
+    from instance_core
+    where instance_core_id >0
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name = #{record.imageName ,jdbcType=VARCHAR}
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''" >
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <select id="selectDistinctImageNameCountByImageName" resultType="java.lang.Integer">
+    select count(DISTINCT image_name)
+    from instance_core
+    where instance_core_id >0
+    <if test="record.imageName != null and record.imageName != ''" >
+      and image_name like '%${record.imageName}%'
+    </if>
+    <if test="record.applicationRuntimeId !=null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    and instance_current_status ="created"
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from instance_core
+    where instance_core_id = #{instanceCoreId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.deployer.model.InstanceCore" >
+    insert into instance_core (instance_core_id, instance_name, instance_rename,
+    instance_proerties, instance_namespace, instance_type,
+    instance_create_datetime, instance_delete_datetime,
+    instance_current_status, instance_image, instance_image_tag,
+    instance_cpu, instance_memory, instance_request_cpu,
+    instance_request_memory, instance_network,
+    instance_image_pull_secret, app_id, app_name,
+    cluster_name, host_name, host_ip,
+    container_status, container_name, image_name,
+    ip, cmd, application_runtime_id,
+    application_tenant_id)
+    values (#{instanceCoreId,jdbcType=INTEGER}, #{instanceName,jdbcType=VARCHAR}, #{instanceRename,jdbcType=VARCHAR},
+    #{instanceProerties,jdbcType=VARCHAR}, #{instanceNamespace,jdbcType=VARCHAR}, #{instanceType,jdbcType=VARCHAR},
+    #{instanceCreateDatetime,jdbcType=TIMESTAMP}, #{instanceDeleteDatetime,jdbcType=TIMESTAMP},
+    #{instanceCurrentStatus,jdbcType=VARCHAR}, #{instanceImage,jdbcType=VARCHAR}, #{instanceImageTag,jdbcType=VARCHAR},
+    #{instanceCpu,jdbcType=VARCHAR}, #{instanceMemory,jdbcType=VARCHAR}, #{instanceRequestCpu,jdbcType=VARCHAR},
+    #{instanceRequestMemory,jdbcType=VARCHAR}, #{instanceNetwork,jdbcType=VARCHAR},
+    #{instanceImagePullSecret,jdbcType=VARCHAR}, #{appId,jdbcType=INTEGER}, #{appName,jdbcType=VARCHAR},
+    #{clusterName,jdbcType=VARCHAR}, #{hostName,jdbcType=VARCHAR}, #{hostIp,jdbcType=VARCHAR},
+    #{containerStatus,jdbcType=VARCHAR}, #{containerName,jdbcType=VARCHAR}, #{imageName,jdbcType=VARCHAR},
+    #{ip,jdbcType=VARCHAR}, #{cmd,jdbcType=VARCHAR}, #{applicationRuntimeId,jdbcType=INTEGER},
+    #{applicationTenantId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.deployer.model.InstanceCore"  useGeneratedKeys="true" keyProperty="instanceCoreId">
+    insert into instance_core
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="instanceCoreId != null" >
+        instance_core_id,
+      </if>
+      <if test="instanceName != null" >
+        instance_name,
+      </if>
+      <if test="instanceRename != null" >
+        instance_rename,
+      </if>
+      <if test="instanceProerties != null" >
+        instance_proerties,
+      </if>
+      <if test="instanceNamespace != null" >
+        instance_namespace,
+      </if>
+      <if test="instanceType != null" >
+        instance_type,
+      </if>
+      <if test="instanceCreateDatetime != null" >
+        instance_create_datetime,
+      </if>
+      <if test="instanceDeleteDatetime != null" >
+        instance_delete_datetime,
+      </if>
+      <if test="instanceCurrentStatus != null" >
+        instance_current_status,
+      </if>
+      <if test="instanceImage != null" >
+        instance_image,
+      </if>
+      <if test="instanceImageTag != null" >
+        instance_image_tag,
+      </if>
+      <if test="instanceCpu != null" >
+        instance_cpu,
+      </if>
+      <if test="instanceMemory != null" >
+        instance_memory,
+      </if>
+      <if test="instanceRequestCpu != null" >
+        instance_request_cpu,
+      </if>
+      <if test="instanceRequestMemory != null" >
+        instance_request_memory,
+      </if>
+      <if test="instanceNetwork != null" >
+        instance_network,
+      </if>
+      <if test="instanceImagePullSecret != null" >
+        instance_image_pull_secret,
+      </if>
+      <if test="appId != null" >
+        app_id,
+      </if>
+      <if test="appName != null" >
+        app_name,
+      </if>
+      <if test="clusterName != null" >
+        cluster_name,
+      </if>
+      <if test="hostName != null" >
+        host_name,
+      </if>
+      <if test="hostIp != null" >
+        host_ip,
+      </if>
+      <if test="containerStatus != null" >
+        container_status,
+      </if>
+      <if test="containerName != null" >
+        container_name,
+      </if>
+      <if test="imageName != null" >
+        image_name,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="cmd != null" >
+        cmd,
+      </if>
+      <if test="applicationRuntimeId != null" >
+        application_runtime_id,
+      </if>
+      <if test="applicationTenantId != null" >
+        application_tenant_id,
+      </if>
+      <if test="componentId != null" >
+        component_id,
+      </if>
+      <if test="instanceReplica != null" >
+        instance_replica,
+      </if>
+      <if test="masterPort != null" >
+        master_port,
+      </if>
+      <if test="masterType != null" >
+        master_type
+      </if>
+
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="instanceCoreId != null" >
+        #{instanceCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceName != null" >
+        #{instanceName,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceRename != null" >
+        #{instanceRename,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceProerties != null" >
+        #{instanceProerties,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceNamespace != null" >
+        #{instanceNamespace,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceType != null" >
+        #{instanceType,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceCreateDatetime != null" >
+        #{instanceCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceDeleteDatetime != null" >
+        #{instanceDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceCurrentStatus != null" >
+        #{instanceCurrentStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceImage != null" >
+        #{instanceImage,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceImageTag != null" >
+        #{instanceImageTag,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceCpu != null" >
+        #{instanceCpu,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceMemory != null" >
+        #{instanceMemory,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceRequestCpu != null" >
+        #{instanceRequestCpu,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceRequestMemory != null" >
+        #{instanceRequestMemory,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceNetwork != null" >
+        #{instanceNetwork,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceImagePullSecret != null" >
+        #{instanceImagePullSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null" >
+        #{appId,jdbcType=INTEGER},
+      </if>
+      <if test="appName != null" >
+        #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterName != null" >
+        #{clusterName,jdbcType=VARCHAR},
+      </if>
+      <if test="hostName != null" >
+        #{hostName,jdbcType=VARCHAR},
+      </if>
+      <if test="hostIp != null" >
+        #{hostIp,jdbcType=VARCHAR},
+      </if>
+      <if test="containerStatus != null" >
+        #{containerStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="containerName != null" >
+        #{containerName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageName != null" >
+        #{imageName,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="cmd != null" >
+        #{cmd,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationRuntimeId != null" >
+        #{applicationRuntimeId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationTenantId != null" >
+        #{applicationTenantId,jdbcType=INTEGER},
+      </if>
+      <if test="componentId != null" >
+        #{componentId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceReplica != null" >
+        #{instanceReplica,jdbcType=INTEGER},
+      </if>
+      <if test="masterPort != null" >
+        #{masterPort,jdbcType=VARCHAR},
+      </if>
+      <if test="masterType != null" >
+        #{masterType,jdbcType=VARCHAR}
+      </if>
+
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.deployer.model.InstanceCore" >
+    update instance_core
+    <set >
+      <if test="instanceName != null" >
+        instance_name = #{instanceName,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceRename != null" >
+        instance_rename = #{instanceRename,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceProerties != null" >
+        instance_proerties = #{instanceProerties,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceNamespace != null" >
+        instance_namespace = #{instanceNamespace,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceType != null" >
+        instance_type = #{instanceType,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceCreateDatetime != null" >
+        instance_create_datetime = #{instanceCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      instance_delete_datetime = #{instanceDeleteDatetime,jdbcType=TIMESTAMP},
+      <if test="instanceCurrentStatus != null" >
+        instance_current_status = #{instanceCurrentStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceImage != null" >
+        instance_image = #{instanceImage,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceImageTag != null" >
+        instance_image_tag = #{instanceImageTag,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceCpu != null" >
+        instance_cpu = #{instanceCpu,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceMemory != null" >
+        instance_memory = #{instanceMemory,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceRequestCpu != null" >
+        instance_request_cpu = #{instanceRequestCpu,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceRequestMemory != null" >
+        instance_request_memory = #{instanceRequestMemory,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceNetwork != null" >
+        instance_network = #{instanceNetwork,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceImagePullSecret != null" >
+        instance_image_pull_secret = #{instanceImagePullSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null" >
+        app_id = #{appId,jdbcType=INTEGER},
+      </if>
+      <if test="appName != null" >
+        app_name = #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterName != null" >
+        cluster_name = #{clusterName,jdbcType=VARCHAR},
+      </if>
+      <if test="hostName != null" >
+        host_name = #{hostName,jdbcType=VARCHAR},
+      </if>
+      <if test="hostIp != null" >
+        host_ip = #{hostIp,jdbcType=VARCHAR},
+      </if>
+      <if test="containerStatus != null" >
+        container_status = #{containerStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="containerName != null" >
+        container_name = #{containerName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageName != null" >
+        image_name = #{imageName,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="cmd != null" >
+        cmd = #{cmd,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationRuntimeId != null" >
+        application_runtime_id = #{applicationRuntimeId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationTenantId != null" >
+        application_tenant_id = #{applicationTenantId,jdbcType=INTEGER},
+      </if>
+      <if test="componentId != null" >
+        component_id = #{componentId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceReplica != null" >
+        instance_replica = #{instanceReplica,jdbcType=INTEGER},
+      </if>
+      <if test="masterPort != null" >
+        master_port = #{masterPort,jdbcType=VARCHAR},
+      </if>
+      <if test="masterType != null" >
+        master_type = #{masterType,jdbcType=VARCHAR}
+      </if>
+
+    </set>
+    where instance_core_id = #{instanceCoreId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.deployer.model.InstanceCore" >
+    update instance_core
+    set instance_name = #{instanceName,jdbcType=VARCHAR},
+    instance_rename = #{instanceRename,jdbcType=VARCHAR},
+    instance_proerties = #{instanceProerties,jdbcType=VARCHAR},
+    instance_namespace = #{instanceNamespace,jdbcType=VARCHAR},
+    instance_type = #{instanceType,jdbcType=VARCHAR},
+    instance_create_datetime = #{instanceCreateDatetime,jdbcType=TIMESTAMP},
+    instance_delete_datetime = #{instanceDeleteDatetime,jdbcType=TIMESTAMP},
+    instance_current_status = #{instanceCurrentStatus,jdbcType=VARCHAR},
+    instance_image = #{instanceImage,jdbcType=VARCHAR},
+    instance_image_tag = #{instanceImageTag,jdbcType=VARCHAR},
+    instance_cpu = #{instanceCpu,jdbcType=VARCHAR},
+    instance_memory = #{instanceMemory,jdbcType=VARCHAR},
+    instance_request_cpu = #{instanceRequestCpu,jdbcType=VARCHAR},
+    instance_request_memory = #{instanceRequestMemory,jdbcType=VARCHAR},
+    instance_network = #{instanceNetwork,jdbcType=VARCHAR},
+    instance_image_pull_secret = #{instanceImagePullSecret,jdbcType=VARCHAR},
+    app_id = #{appId,jdbcType=INTEGER},
+    app_name = #{appName,jdbcType=VARCHAR},
+    cluster_name = #{clusterName,jdbcType=VARCHAR},
+    host_name = #{hostName,jdbcType=VARCHAR},
+    host_ip = #{hostIp,jdbcType=VARCHAR},
+    container_status = #{containerStatus,jdbcType=VARCHAR},
+    container_name = #{containerName,jdbcType=VARCHAR},
+    image_name = #{imageName,jdbcType=VARCHAR},
+    ip = #{ip,jdbcType=VARCHAR},
+    cmd = #{cmd,jdbcType=VARCHAR},
+    application_runtime_id = #{applicationRuntimeId,jdbcType=INTEGER},
+    application_tenant_id = #{applicationTenantId,jdbcType=INTEGER}
+    where instance_core_id = #{instanceCoreId,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByImageNameAppName" resultMap="BaseResultMap">
+    select *
+    from instance_core
+    where instance_core_id >0
+    <if test="record.instanceImage != null">
+      and instance_image = #{record.instanceImage,jdbcType=VARCHAR}
+    </if>
+    <if test="record.appName != null">
+      and  app_name = #{record.appName,jdbcType=VARCHAR}
+    </if>
+    <if test="record.appId != null">
+      and  app_id = #{record.appId,jdbcType=Integer}
+    </if>
+    <if test="record.applicationRuntimeId != null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    and instance_delete_datetime IS NULL
+    order by instance_core_id DESC
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectCountByImageNameAppName" resultType="java.lang.Integer">
+    select count(*)
+    from instance_core
+    where instance_core_id >0
+    <if test="record.instanceImage != null">
+      and instance_image = #{record.instanceImage,jdbcType=VARCHAR}
+    </if>
+    <if test="record.appName != null">
+      and  app_name = #{record.appName,jdbcType=VARCHAR}
+    </if>
+    <if test="record.appId != null">
+      and  app_id = #{record.appId,jdbcType=Integer}
+    </if>
+    <if test="record.applicationRuntimeId != null">
+      and application_runtime_id = #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.instanceNamespace !=null and record.instanceNamespace !=''">
+      and instance_namespace = #{record.instanceNamespace,jdbcType=VARCHAR}
+    </if>
+    and instance_delete_datetime IS NULL
+  </select>
+  <select id="selectByComponentId" resultMap="BaseResultMap">
+    select *
+    from instance_core
+    where 1 = 1
+    <if test="componentId != null">
+      and component_id = #{componentId,jdbcType=INTEGER}
+    </if>
+  </select>
+
+  <select id="isExistInstance" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from instance_core where component_id = #{componentId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectComponentAllCount" resultType="java.lang.Integer">
+    select COALESCE(SUM(instance_replica),0) from instance_core
+    where instance_core_id > 0
+    <if test="envId != null and envId > 0" >
+      and application_runtime_id = #{envId,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="selectComponentRunningCount" resultType="java.lang.Integer">
+    select COALESCE(SUM(instance_replica),0) from instance_core
+    where instance_core_id > 0 and instance_current_status ='created'
+    <if test="envId != null and envId > 0" >
+      and application_runtime_id = #{envId,jdbcType=INTEGER}
+    </if>
+  </select>
+
+  <select id="selectAllComponent" resultMap="BaseResultMap">
+    select * from instance_core where 1=1
+    <if test="componentIds!= null and componentIds.size() > 0" >
+      and component_id in
+      <foreach collection="componentIds" item="componentId" index="index"
+               open="(" close=")" separator=",">
+        #{componentId}
+      </foreach>
+    </if>
+  </select>
+</mapper>
+
+

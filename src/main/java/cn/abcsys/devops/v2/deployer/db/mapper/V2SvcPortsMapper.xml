@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2SvcPortsMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2SvcPorts" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="svc_id" property="svcId" jdbcType="INTEGER" />
+    <result column="port_name" property="portName" jdbcType="VARCHAR" />
+    <result column="protocol" property="protocol" jdbcType="VARCHAR" />
+    <result column="port_value" property="portValue" jdbcType="INTEGER" />
+    <result column="target_port" property="targetPort" jdbcType="INTEGER" />
+    <result column="node_port" property="nodePort" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, svc_id, port_name, protocol, port_value, target_port, node_port, create_time,
+    status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_svc_ports
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllByServiceId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_svc_ports
+    where svc_id = #{serviceId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllByServiceIdExcept" resultType="java.lang.Integer" >
+    select
+    DISTINCT node_port
+    from v2_svc_ports
+    where svc_id != #{serviceId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllNodeport" resultType="java.lang.Integer" >
+    select
+    DISTINCT node_port
+    from v2_svc_ports
+  </select>
+
+  <delete id="deleteAllByServiceId" parameterType="java.lang.Integer" >
+    delete from v2_svc_ports
+    where svc_id = #{serviceId,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_svc_ports
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2SvcPorts" useGeneratedKeys="true" keyProperty="id" >
+    insert into v2_svc_ports (id, svc_id, port_name,
+    protocol, port_value, target_port,
+    node_port, create_time, status
+    )
+    values (#{id,jdbcType=INTEGER}, #{svcId,jdbcType=INTEGER}, #{portName,jdbcType=VARCHAR},
+    #{protocol,jdbcType=VARCHAR}, #{portValue,jdbcType=INTEGER}, #{targetPort,jdbcType=INTEGER},
+    #{nodePort,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2SvcPorts" useGeneratedKeys="true" keyProperty="id" >
+    insert into v2_svc_ports
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="svcId != null" >
+        svc_id,
+      </if>
+      <if test="portName != null" >
+        port_name,
+      </if>
+      <if test="protocol != null" >
+        protocol,
+      </if>
+      <if test="portValue != null" >
+        port_value,
+      </if>
+      <if test="targetPort != null" >
+        target_port,
+      </if>
+      <if test="nodePort != null" >
+        node_port,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="svcId != null" >
+        #{svcId,jdbcType=INTEGER},
+      </if>
+      <if test="portName != null" >
+        #{portName,jdbcType=VARCHAR},
+      </if>
+      <if test="protocol != null" >
+        #{protocol,jdbcType=VARCHAR},
+      </if>
+      <if test="portValue != null" >
+        #{portValue,jdbcType=INTEGER},
+      </if>
+      <if test="targetPort != null" >
+        #{targetPort,jdbcType=INTEGER},
+      </if>
+      <if test="nodePort != null" >
+        #{nodePort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2SvcPorts" >
+    update v2_svc_ports
+    <set >
+      <if test="svcId != null" >
+        svc_id = #{svcId,jdbcType=INTEGER},
+      </if>
+      <if test="portName != null" >
+        port_name = #{portName,jdbcType=VARCHAR},
+      </if>
+      <if test="protocol != null" >
+        protocol = #{protocol,jdbcType=VARCHAR},
+      </if>
+      <if test="portValue != null" >
+        port_value = #{portValue,jdbcType=INTEGER},
+      </if>
+      <if test="targetPort != null" >
+        target_port = #{targetPort,jdbcType=INTEGER},
+      </if>
+      <if test="nodePort != null" >
+        node_port = #{nodePort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2SvcPorts" >
+    update v2_svc_ports
+    set svc_id = #{svcId,jdbcType=INTEGER},
+    port_name = #{portName,jdbcType=VARCHAR},
+    protocol = #{protocol,jdbcType=VARCHAR},
+    port_value = #{portValue,jdbcType=INTEGER},
+    target_port = #{targetPort,jdbcType=INTEGER},
+    node_port = #{nodePort,jdbcType=INTEGER},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

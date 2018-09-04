@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2NetworkPolicyMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPolicy" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="application_id" property="applicationId" jdbcType="INTEGER" />
+    <result column="project_id" property="projectId" jdbcType="INTEGER" />
+    <result column="env_id" property="envId" jdbcType="INTEGER" />
+    <result column="apiversion" property="apiversion" jdbcType="VARCHAR" />
+    <result column="kind" property="kind" jdbcType="VARCHAR" />
+    <result column="object_name" property="objectName" jdbcType="VARCHAR" />
+    <result column="namespace" property="namespace" jdbcType="VARCHAR" />
+    <result column="master_ip" property="masterIp" jdbcType="VARCHAR" />
+    <result column="master_type" property="masterType" jdbcType="VARCHAR" />
+    <result column="master_port" property="masterPort" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="create_dateime" property="createDateime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, application_id, project_id, env_id, apiversion, kind, object_name, namespace,
+    master_ip, master_type, master_port, status, create_dateime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_network_policy
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByNetworkName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_network_policy
+    where object_name = #{networkName,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByNetworkNameList" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_network_policy
+    where object_name in
+    <foreach collection="networkNameList" item="networkName" index="index"
+             open="(" close=")" separator=",">
+      #{networkName}
+    </foreach>
+    AND env_id = #{envId,jdbcType=INTEGER}
+  </select>
+
+
+
+  <select id="checkIsExist" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_network_policy t1
+    where t1.object_name = #{name,jdbcType=VARCHAR}
+    and t1.env_id  =  #{envId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByFields" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_network_policy
+    where id > 0
+    <if test="networkPolicy.envId != null and networkPolicy.envId>0" >
+      and env_id = #{networkPolicy.envId,jdbcType=INTEGER}
+    </if>
+    <if test="networkPolicy.objectName != null" >
+      and object_name LIKE CONCAT('%', #{networkPolicy.objectName,jdbcType=VARCHAR}, '%')
+    </if>
+    limit #{start,jdbcType=INTEGER}, #{end,jdbcType=INTEGER}
+  </select>
+
+  <select id="getTotalNumByFields" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_network_policy
+    where id > 0
+    <if test="networkPolicy.envId != null and networkPolicy.envId>0" >
+      and env_id = #{networkPolicy.envId,jdbcType=INTEGER}
+    </if>
+    <if test="networkPolicy.objectName != null" >
+      and object_name LIKE CONCAT('%', #{networkPolicy.objectName,jdbcType=VARCHAR}, '%')
+    </if>
+  </select>
+
+  <select id="selectByEnvId" resultMap="BaseResultMap" resultType="java.util.List" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_network_policy
+    where env_id = #{envId,jdbcType=INTEGER}
+    limit #{start,jdbcType=INTEGER}, #{end,jdbcType=INTEGER}
+  </select>
+
+  <select id="getTotalNumByEnvId" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_network_policy t1
+    where t1.env_id  =  #{envId,jdbcType=INTEGER}
+  </select>
+
+  <select id="getTotalNumByEnvIdAndProjectIds" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_network_policy t1
+    where id > 0
+    <if test="envId != null" >
+    AND t1.env_id  =  #{envId,jdbcType=INTEGER}
+    </if>
+    <if test="projectIds != null" >
+      AND t1.project_id IN
+      <foreach collection="projectIds" item="eachId" index="index"
+               open="(" close=")" separator=",">
+        #{eachId,jdbcType=INTEGER}
+      </foreach>
+    </if>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_network_policy
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPolicy"  useGeneratedKeys="true" keyProperty="id">
+    insert into v2_network_policy (id, application_id, project_id,
+    env_id, apiversion, kind,
+    object_name, namespace, master_ip,
+    master_type, master_port, status,
+    create_dateime)
+    values (#{id,jdbcType=INTEGER}, #{applicationId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER},
+    #{envId,jdbcType=INTEGER}, #{apiversion,jdbcType=VARCHAR}, #{kind,jdbcType=VARCHAR},
+    #{objectName,jdbcType=VARCHAR}, #{namespace,jdbcType=VARCHAR}, #{masterIp,jdbcType=VARCHAR},
+    #{masterType,jdbcType=VARCHAR}, #{masterPort,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
+    #{createDateime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPolicy" useGeneratedKeys="true" keyProperty="id" >
+    insert into v2_network_policy
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="applicationId != null" >
+        application_id,
+      </if>
+      <if test="projectId != null" >
+        project_id,
+      </if>
+      <if test="envId != null" >
+        env_id,
+      </if>
+      <if test="apiversion != null" >
+        apiversion,
+      </if>
+      <if test="kind != null" >
+        kind,
+      </if>
+      <if test="objectName != null" >
+        object_name,
+      </if>
+      <if test="namespace != null" >
+        namespace,
+      </if>
+      <if test="masterIp != null" >
+        master_ip,
+      </if>
+      <if test="masterType != null" >
+        master_type,
+      </if>
+      <if test="masterPort != null" >
+        master_port,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createDateime != null" >
+        create_dateime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="applicationId != null" >
+        #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null" >
+        #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="envId != null" >
+        #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="apiversion != null" >
+        #{apiversion,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null" >
+        #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="objectName != null" >
+        #{objectName,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null" >
+        #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="masterIp != null" >
+        #{masterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="masterType != null" >
+        #{masterType,jdbcType=VARCHAR},
+      </if>
+      <if test="masterPort != null" >
+        #{masterPort,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createDateime != null" >
+        #{createDateime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPolicy" >
+    update v2_network_policy
+    <set >
+      <if test="applicationId != null" >
+        application_id = #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null" >
+        project_id = #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="envId != null" >
+        env_id = #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="apiversion != null" >
+        apiversion = #{apiversion,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null" >
+        kind = #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="objectName != null" >
+        object_name = #{objectName,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null" >
+        namespace = #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="masterIp != null" >
+        master_ip = #{masterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="masterType != null" >
+        master_type = #{masterType,jdbcType=VARCHAR},
+      </if>
+      <if test="masterPort != null" >
+        master_port = #{masterPort,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createDateime != null" >
+        create_dateime = #{createDateime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPolicy" >
+    update v2_network_policy
+    set application_id = #{applicationId,jdbcType=INTEGER},
+    project_id = #{projectId,jdbcType=INTEGER},
+    env_id = #{envId,jdbcType=INTEGER},
+    apiversion = #{apiversion,jdbcType=VARCHAR},
+    kind = #{kind,jdbcType=VARCHAR},
+    object_name = #{objectName,jdbcType=VARCHAR},
+    namespace = #{namespace,jdbcType=VARCHAR},
+    master_ip = #{masterIp,jdbcType=VARCHAR},
+    master_type = #{masterType,jdbcType=VARCHAR},
+    master_port = #{masterPort,jdbcType=VARCHAR},
+    status = #{status,jdbcType=VARCHAR},
+    create_dateime = #{createDateime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

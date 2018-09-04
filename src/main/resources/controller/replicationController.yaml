@@ -1,0 +1,8 @@
+apiVersion: openshift
+kind: ReplicationController
+properties:
+  default: default
+handlers:
+- cn.abcsys.devops.v3.handler.replicationcontroller.RcApplicationHandler
+- cn.abcsys.devops.v3.handler.replicationcontroller.RcConfigurationHandler
+- cn.abcsys.devops.v3.handler.utils.StatusHandler

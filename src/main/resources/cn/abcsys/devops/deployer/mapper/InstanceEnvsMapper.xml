@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.deployer.dao.InstanceEnvsMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.deployer.model.InstanceEnvs" >
+    <id column="instance_envs_id" property="instanceEnvsId" jdbcType="INTEGER" />
+    <result column="instance_core_id" property="instanceCoreId" jdbcType="INTEGER" />
+    <result column="instance_envs_name" property="instanceEnvsName" jdbcType="VARCHAR" />
+    <result column="instance_envs_value" property="instanceEnvsValue" jdbcType="VARCHAR" />
+    <result column="instance_envs_description" property="instanceEnvsDescription" jdbcType="VARCHAR" />
+    <result column="instance_envs_create_datetime" property="instanceEnvsCreateDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_envs_delete_datetime" property="instanceEnvsDeleteDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_envs_current_status" property="instanceEnvsCurrentStatus" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    instance_envs_id, instance_core_id, instance_envs_name, instance_envs_value, instance_envs_description, 
+    instance_envs_create_datetime, instance_envs_delete_datetime, instance_envs_current_status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from instance_envs
+    where instance_envs_id = #{instanceEnvsId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByInstanceCoreId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from instance_envs
+    where instance_core_id = #{instanceCoreId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from instance_envs
+    where instance_envs_id = #{instanceEnvsId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.deployer.model.InstanceEnvs" useGeneratedKeys="true" keyProperty="instanceEnvsId">
+    insert into instance_envs (instance_envs_id, instance_core_id, instance_envs_name, 
+      instance_envs_value, instance_envs_description, 
+      instance_envs_create_datetime, instance_envs_delete_datetime, 
+      instance_envs_current_status)
+    values (#{instanceEnvsId,jdbcType=INTEGER}, #{instanceCoreId,jdbcType=INTEGER}, #{instanceEnvsName,jdbcType=VARCHAR}, 
+      #{instanceEnvsValue,jdbcType=VARCHAR}, #{instanceEnvsDescription,jdbcType=VARCHAR}, 
+      #{instanceEnvsCreateDatetime,jdbcType=TIMESTAMP}, #{instanceEnvsDeleteDatetime,jdbcType=TIMESTAMP}, 
+      #{instanceEnvsCurrentStatus,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.deployer.model.InstanceEnvs" useGeneratedKeys="true" keyProperty="instanceEnvsId">
+    insert into instance_envs
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="instanceEnvsId != null" >
+        instance_envs_id,
+      </if>
+      <if test="instanceCoreId != null" >
+        instance_core_id,
+      </if>
+      <if test="instanceEnvsName != null" >
+        instance_envs_name,
+      </if>
+      <if test="instanceEnvsValue != null" >
+        instance_envs_value,
+      </if>
+      <if test="instanceEnvsDescription != null" >
+        instance_envs_description,
+      </if>
+      <if test="instanceEnvsCreateDatetime != null" >
+        instance_envs_create_datetime,
+      </if>
+      <if test="instanceEnvsDeleteDatetime != null" >
+        instance_envs_delete_datetime,
+      </if>
+      <if test="instanceEnvsCurrentStatus != null" >
+        instance_envs_current_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="instanceEnvsId != null" >
+        #{instanceEnvsId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceCoreId != null" >
+        #{instanceCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceEnvsName != null" >
+        #{instanceEnvsName,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEnvsValue != null" >
+        #{instanceEnvsValue,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEnvsDescription != null" >
+        #{instanceEnvsDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEnvsCreateDatetime != null" >
+        #{instanceEnvsCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEnvsDeleteDatetime != null" >
+        #{instanceEnvsDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEnvsCurrentStatus != null" >
+        #{instanceEnvsCurrentStatus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.deployer.model.InstanceEnvs" >
+    update instance_envs
+    <set >
+      <if test="instanceCoreId != null" >
+        instance_core_id = #{instanceCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceEnvsName != null" >
+        instance_envs_name = #{instanceEnvsName,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEnvsValue != null" >
+        instance_envs_value = #{instanceEnvsValue,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEnvsDescription != null" >
+        instance_envs_description = #{instanceEnvsDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEnvsCreateDatetime != null" >
+        instance_envs_create_datetime = #{instanceEnvsCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEnvsDeleteDatetime != null" >
+        instance_envs_delete_datetime = #{instanceEnvsDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEnvsCurrentStatus != null" >
+        instance_envs_current_status = #{instanceEnvsCurrentStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where instance_envs_id = #{instanceEnvsId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.deployer.model.InstanceEnvs" >
+    update instance_envs
+    set instance_core_id = #{instanceCoreId,jdbcType=INTEGER},
+      instance_envs_name = #{instanceEnvsName,jdbcType=VARCHAR},
+      instance_envs_value = #{instanceEnvsValue,jdbcType=VARCHAR},
+      instance_envs_description = #{instanceEnvsDescription,jdbcType=VARCHAR},
+      instance_envs_create_datetime = #{instanceEnvsCreateDatetime,jdbcType=TIMESTAMP},
+      instance_envs_delete_datetime = #{instanceEnvsDeleteDatetime,jdbcType=TIMESTAMP},
+      instance_envs_current_status = #{instanceEnvsCurrentStatus,jdbcType=VARCHAR}
+    where instance_envs_id = #{instanceEnvsId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.deployer.dao.InstancePortsMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.deployer.model.InstancePorts" >
+    <id column="instance_ports_id" property="instancePortsId" jdbcType="INTEGER" />
+    <result column="instance_core_id" property="instanceCoreId" jdbcType="INTEGER" />
+    <result column="instance_ports_port" property="instancePortsPort" jdbcType="INTEGER" />
+    <result column="instance_ports_target_port" property="instancePortsTargetPort" jdbcType="INTEGER" />
+    <result column="instance_ports_node_port" property="instancePortsNodePort" jdbcType="INTEGER" />
+    <result column="instance_ports_cluster_ip" property="instancePortsClusterIp" jdbcType="VARCHAR" />
+    <result column="instance_ports_description" property="instancePortsDescription" jdbcType="VARCHAR" />
+    <result column="instance_ports_create_datetime" property="instancePortsCreateDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_ports_delete_datetime" property="instancePortsDeleteDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_ports_current_status" property="instancePortsCurrentStatus" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    instance_ports_id, instance_core_id, instance_ports_port, instance_ports_target_port,
+    instance_ports_node_port, instance_ports_cluster_ip, instance_ports_description,
+    instance_ports_create_datetime, instance_ports_delete_datetime, instance_ports_current_status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from instance_ports
+    where instance_ports_id = #{instancePortsId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByInstanceCoreId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from instance_ports
+    where instance_core_id = #{instanceCoreId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectDistinctPortsByAppName" resultMap="BaseResultMap">
+    select DISTINCT t1.instance_ports_port
+    from instance_ports t1
+    where t1.instance_core_id in ( select t2.instance_core_id from instance_core t2
+                                    where t2.app_name = #{ic.appName,jdbcType=VARCHAR}
+                                     and t2.instance_current_status ="created"
+                                    )
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from instance_ports
+    where instance_ports_id = #{instancePortsId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.deployer.model.InstancePorts"  useGeneratedKeys="true" keyProperty="instancePortsId">
+    insert into instance_ports (instance_ports_id, instance_core_id,
+    instance_ports_port, instance_ports_target_port,
+    instance_ports_node_port, instance_ports_cluster_ip,
+    instance_ports_description, instance_ports_create_datetime,
+    instance_ports_delete_datetime, instance_ports_current_status
+    )
+    values (#{instancePortsId,jdbcType=INTEGER}, #{instanceCoreId,jdbcType=INTEGER},
+    #{instancePortsPort,jdbcType=INTEGER}, #{instancePortsTargetPort,jdbcType=INTEGER},
+    #{instancePortsNodePort,jdbcType=INTEGER}, #{instancePortsClusterIp,jdbcType=VARCHAR},
+    #{instancePortsDescription,jdbcType=VARCHAR}, #{instancePortsCreateDatetime,jdbcType=TIMESTAMP},
+    #{instancePortsDeleteDatetime,jdbcType=TIMESTAMP}, #{instancePortsCurrentStatus,jdbcType=VARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.deployer.model.InstancePorts" useGeneratedKeys="true" keyProperty="instancePortsId">
+    insert into instance_ports
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="instancePortsId != null" >
+        instance_ports_id,
+      </if>
+      <if test="instanceCoreId != null" >
+        instance_core_id,
+      </if>
+      <if test="instancePortsPort != null" >
+        instance_ports_port,
+      </if>
+      <if test="instancePortsTargetPort != null" >
+        instance_ports_target_port,
+      </if>
+      <if test="instancePortsNodePort != null" >
+        instance_ports_node_port,
+      </if>
+      <if test="instancePortsClusterIp != null" >
+        instance_ports_cluster_ip,
+      </if>
+      <if test="instancePortsDescription != null" >
+        instance_ports_description,
+      </if>
+      <if test="instancePortsCreateDatetime != null" >
+        instance_ports_create_datetime,
+      </if>
+      <if test="instancePortsDeleteDatetime != null" >
+        instance_ports_delete_datetime,
+      </if>
+      <if test="instancePortsCurrentStatus != null" >
+        instance_ports_current_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="instancePortsId != null" >
+        #{instancePortsId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceCoreId != null" >
+        #{instanceCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="instancePortsPort != null" >
+        #{instancePortsPort,jdbcType=INTEGER},
+      </if>
+      <if test="instancePortsTargetPort != null" >
+        #{instancePortsTargetPort,jdbcType=INTEGER},
+      </if>
+      <if test="instancePortsNodePort != null" >
+        #{instancePortsNodePort,jdbcType=INTEGER},
+      </if>
+      <if test="instancePortsClusterIp != null" >
+        #{instancePortsClusterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="instancePortsDescription != null" >
+        #{instancePortsDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="instancePortsCreateDatetime != null" >
+        #{instancePortsCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instancePortsDeleteDatetime != null" >
+        #{instancePortsDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instancePortsCurrentStatus != null" >
+        #{instancePortsCurrentStatus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.deployer.model.InstancePorts" >
+    update instance_ports
+    <set >
+      <if test="instanceCoreId != null" >
+        instance_core_id = #{instanceCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="instancePortsPort != null" >
+        instance_ports_port = #{instancePortsPort,jdbcType=INTEGER},
+      </if>
+      <if test="instancePortsTargetPort != null" >
+        instance_ports_target_port = #{instancePortsTargetPort,jdbcType=INTEGER},
+      </if>
+      <if test="instancePortsNodePort != null" >
+        instance_ports_node_port = #{instancePortsNodePort,jdbcType=INTEGER},
+      </if>
+      <if test="instancePortsClusterIp != null" >
+        instance_ports_cluster_ip = #{instancePortsClusterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="instancePortsDescription != null" >
+        instance_ports_description = #{instancePortsDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="instancePortsCreateDatetime != null" >
+        instance_ports_create_datetime = #{instancePortsCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instancePortsDeleteDatetime != null" >
+        instance_ports_delete_datetime = #{instancePortsDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instancePortsCurrentStatus != null" >
+        instance_ports_current_status = #{instancePortsCurrentStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where instance_ports_id = #{instancePortsId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.deployer.model.InstancePorts" >
+    update instance_ports
+    set instance_core_id = #{instanceCoreId,jdbcType=INTEGER},
+    instance_ports_port = #{instancePortsPort,jdbcType=INTEGER},
+    instance_ports_target_port = #{instancePortsTargetPort,jdbcType=INTEGER},
+    instance_ports_node_port = #{instancePortsNodePort,jdbcType=INTEGER},
+    instance_ports_cluster_ip = #{instancePortsClusterIp,jdbcType=VARCHAR},
+    instance_ports_description = #{instancePortsDescription,jdbcType=VARCHAR},
+    instance_ports_create_datetime = #{instancePortsCreateDatetime,jdbcType=TIMESTAMP},
+    instance_ports_delete_datetime = #{instancePortsDeleteDatetime,jdbcType=TIMESTAMP},
+    instance_ports_current_status = #{instancePortsCurrentStatus,jdbcType=VARCHAR}
+    where instance_ports_id = #{instancePortsId,jdbcType=INTEGER}
+  </update>
+</mapper>

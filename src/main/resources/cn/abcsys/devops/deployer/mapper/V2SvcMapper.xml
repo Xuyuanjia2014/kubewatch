@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2SvcMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2Svc" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="application_id" property="applicationId" jdbcType="INTEGER" />
+    <result column="apiversion" property="apiversion" jdbcType="VARCHAR" />
+    <result column="kind" property="kind" jdbcType="VARCHAR" />
+    <result column="svc_type" property="svcType" jdbcType="VARCHAR" />
+    <result column="svc_name" property="svcName" jdbcType="VARCHAR" />
+    <result column="namespace" property="namespace" jdbcType="VARCHAR" />
+    <result column="cluster_ip" property="clusterIp" jdbcType="VARCHAR" />
+    <result column="master_ip" property="masterIp" jdbcType="VARCHAR" />
+    <result column="master_type" property="masterType" jdbcType="VARCHAR" />
+    <result column="master_port" property="masterPort" jdbcType="VARCHAR" />
+    <result column="create_dateime" property="createDateime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="version_id" property="versionId" javaType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, application_id, apiversion, kind, svc_type, svc_name, namespace, cluster_ip,
+    master_ip, master_type, master_port, create_dateime, status, version_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_svc
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectOneByApplicationId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_svc
+    where application_id = #{applicationId,jdbcType=INTEGER}
+    ORDER BY id DESC
+    limit 0,1
+  </select>
+
+  <select id="selectAllByApplicationId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_svc
+    where application_id = #{applicationId,jdbcType=INTEGER}
+    limit #{start,jdbcType=INTEGER}, #{end,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllByApplicationIdNotPage" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_svc
+    where application_id = #{applicationId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllBySvcNameAndApplicationIdNotPage" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_svc
+    where svc_name = #{svcName,jdbcType=VARCHAR}
+    AND application_id != #{applicationId,jdbcType=INTEGER}
+    <if test="masterIp != null">
+      AND master_ip = #{masterIp,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <select id="getTotalNumByApplicationId" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_svc
+    where application_id = #{applicationId,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_svc
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteAllByApplicationId" parameterType="java.lang.Integer" >
+    delete from v2_svc
+    where application_id = #{applicationId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Svc" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_svc (id, application_id, apiversion,
+    kind, svc_type, svc_name,
+    namespace, cluster_ip, master_ip,
+    master_type, master_port, create_dateime,
+    status, version_id)
+    values (#{id,jdbcType=INTEGER}, #{applicationId,jdbcType=INTEGER}, #{apiversion,jdbcType=VARCHAR},
+    #{kind,jdbcType=VARCHAR}, #{svcType,jdbcType=VARCHAR}, #{svcName,jdbcType=VARCHAR},
+    #{namespace,jdbcType=VARCHAR}, #{clusterIp,jdbcType=VARCHAR}, #{masterIp,jdbcType=VARCHAR},
+    #{masterType,jdbcType=VARCHAR}, #{masterPort,jdbcType=VARCHAR}, #{createDateime,jdbcType=TIMESTAMP},
+    #{status,jdbcType=VARCHAR}, #{versionId, jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Svc" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_svc
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="applicationId != null" >
+        application_id,
+      </if>
+      <if test="apiversion != null" >
+        apiversion,
+      </if>
+      <if test="kind != null" >
+        kind,
+      </if>
+      <if test="svcType != null" >
+        svc_type,
+      </if>
+      <if test="svcName != null" >
+        svc_name,
+      </if>
+      <if test="namespace != null" >
+        namespace,
+      </if>
+      <if test="clusterIp != null" >
+        cluster_ip,
+      </if>
+      <if test="masterIp != null" >
+        master_ip,
+      </if>
+      <if test="masterType != null" >
+        master_type,
+      </if>
+      <if test="masterPort != null" >
+        master_port,
+      </if>
+      <if test="createDateime != null" >
+        create_dateime,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="versionId != null" >
+        version_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="applicationId != null" >
+        #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="apiversion != null" >
+        #{apiversion,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null" >
+        #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="svcType != null" >
+        #{svcType,jdbcType=VARCHAR},
+      </if>
+      <if test="svcName != null" >
+        #{svcName,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null" >
+        #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterIp != null" >
+        #{clusterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="masterIp != null" >
+        #{masterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="masterType != null" >
+        #{masterType,jdbcType=VARCHAR},
+      </if>
+      <if test="masterPort != null" >
+        #{masterPort,jdbcType=VARCHAR},
+      </if>
+      <if test="createDateime != null" >
+        #{createDateime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="versionId != null" >
+        #{versionId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Svc" >
+    update v2_svc
+    <set >
+      <if test="applicationId != null" >
+        application_id = #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="apiversion != null" >
+        apiversion = #{apiversion,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null" >
+        kind = #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="svcType != null" >
+        svc_type = #{svcType,jdbcType=VARCHAR},
+      </if>
+      <if test="svcName != null" >
+        svc_name = #{svcName,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null" >
+        namespace = #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterIp != null" >
+        cluster_ip = #{clusterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="masterIp != null" >
+        master_ip = #{masterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="masterType != null" >
+        master_type = #{masterType,jdbcType=VARCHAR},
+      </if>
+      <if test="masterPort != null" >
+        master_port = #{masterPort,jdbcType=VARCHAR},
+      </if>
+      <if test="createDateime != null" >
+        create_dateime = #{createDateime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Svc" >
+    update v2_svc
+    set application_id = #{applicationId,jdbcType=INTEGER},
+    apiversion = #{apiversion,jdbcType=VARCHAR},
+    kind = #{kind,jdbcType=VARCHAR},
+    svc_type = #{svcType,jdbcType=VARCHAR},
+    svc_name = #{svcName,jdbcType=VARCHAR},
+    namespace = #{namespace,jdbcType=VARCHAR},
+    cluster_ip = #{clusterIp,jdbcType=VARCHAR},
+    master_ip = #{masterIp,jdbcType=VARCHAR},
+    master_type = #{masterType,jdbcType=VARCHAR},
+    master_port = #{masterPort,jdbcType=VARCHAR},
+    create_dateime = #{createDateime,jdbcType=TIMESTAMP},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

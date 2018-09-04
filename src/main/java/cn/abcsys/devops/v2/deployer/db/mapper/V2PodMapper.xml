@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2PodMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2Pod" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+    <result column="image_group_id" property="imageGroupId" jdbcType="INTEGER" />
+    <result column="file_path" property="filePath" jdbcType="VARCHAR" />
+    <result column="kind" property="kind" jdbcType="VARCHAR" />
+    <result column="replace_pod_id" property="replacePodId" jdbcType="INTEGER" />
+    <result column="replace_old_parent_id" property="replaceOldParentId" jdbcType="INTEGER" />
+    <result column="if_delete_parent" property="ifDeleteParent" jdbcType="INTEGER" />
+    <result column="parent_name" property="parentName" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="namespace" property="namespace" jdbcType="VARCHAR" />
+    <result column="api_version" property="apiVersion" jdbcType="VARCHAR" />
+    <result column="resource_version" property="resourceVersion" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uuid, image_group_id, file_path, kind, replace_pod_id, replace_old_parent_id,
+    if_delete_parent, parent_name, real_name, namespace, api_version, resource_version,
+    update_time, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_pod
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByImageGroupId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_pod
+    where image_group_id = #{imageGroupId,jdbcType=INTEGER}
+    and status != "Deleted"
+    limit 0,1
+  </select>
+
+  <select id="selectByLabels" resultMap="BaseResultMap" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2ImageGroup" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_pod t1
+    where t1.image_group_id =
+    (
+    select t2.id from v2_image_group t2
+    where t2.real_name = #{realName,jdbcType=VARCHAR}
+    and t2.version_id = #{versionId,jdbcType=INTEGER}
+    limit 0,1
+    )
+    and status != "Deleted"
+    limit 0,1
+  </select>
+  <select id="selectPodsByApplicationId" resultType="java.lang.Integer">
+    select
+    count(*)
+    from v2_pod t1
+    where t1.image_group_id in
+    (
+    select t2.id from v2_image_group t2
+    where  t2.application_id in (#{applicationId,jdbcType=INTEGER})
+    and t2.delete_time is NULL
+    )
+    <if test="status != null" >
+      and t1.status = #{status,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <delete id="deleteByImageGroupId" parameterType="java.lang.Integer" >
+    delete from v2_pod
+    where image_group_id = #{imageGroupId,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByUid" parameterType="java.lang.String" >
+    delete from v2_pod
+    where uuid = #{uid,jdbcType=VARCHAR}
+  </delete>
+
+  <select id="getMaxResourceVersion" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_pod
+    order by resource_version desc
+    limit 1
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_pod
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Pod" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_pod (id, uuid, image_group_id,
+    file_path, kind, replace_pod_id,
+    replace_old_parent_id, if_delete_parent, parent_name,
+    real_name, namespace, api_version,
+    resource_version, update_time, status
+    )
+    values (#{id,jdbcType=INTEGER}, #{uuid,jdbcType=VARCHAR}, #{imageGroupId,jdbcType=INTEGER},
+    #{filePath,jdbcType=VARCHAR}, #{kind,jdbcType=VARCHAR}, #{replacePodId,jdbcType=INTEGER},
+    #{replaceOldParentId,jdbcType=INTEGER}, #{ifDeleteParent,jdbcType=INTEGER}, #{parentName,jdbcType=VARCHAR},
+    #{realName,jdbcType=VARCHAR}, #{namespace,jdbcType=VARCHAR}, #{apiVersion,jdbcType=VARCHAR},
+    #{resourceVersion,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Pod" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_pod
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uuid != null" >
+        uuid,
+      </if>
+      <if test="imageGroupId != null" >
+        image_group_id,
+      </if>
+      <if test="filePath != null" >
+        file_path,
+      </if>
+      <if test="kind != null" >
+        kind,
+      </if>
+      <if test="replacePodId != null" >
+        replace_pod_id,
+      </if>
+      <if test="replaceOldParentId != null" >
+        replace_old_parent_id,
+      </if>
+      <if test="ifDeleteParent != null" >
+        if_delete_parent,
+      </if>
+      <if test="parentName != null" >
+        parent_name,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="namespace != null" >
+        namespace,
+      </if>
+      <if test="apiVersion != null" >
+        api_version,
+      </if>
+      <if test="resourceVersion != null" >
+        resource_version,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uuid != null" >
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="imageGroupId != null" >
+        #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="filePath != null" >
+        #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null" >
+        #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="replacePodId != null" >
+        #{replacePodId,jdbcType=INTEGER},
+      </if>
+      <if test="replaceOldParentId != null" >
+        #{replaceOldParentId,jdbcType=INTEGER},
+      </if>
+      <if test="ifDeleteParent != null" >
+        #{ifDeleteParent,jdbcType=INTEGER},
+      </if>
+      <if test="parentName != null" >
+        #{parentName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null" >
+        #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="apiVersion != null" >
+        #{apiVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceVersion != null" >
+        #{resourceVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Pod" >
+    update v2_pod
+    <set >
+      <if test="uuid != null" >
+        uuid = #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="imageGroupId != null" >
+        image_group_id = #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="filePath != null" >
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null" >
+        kind = #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="replacePodId != null" >
+        replace_pod_id = #{replacePodId,jdbcType=INTEGER},
+      </if>
+      <if test="replaceOldParentId != null" >
+        replace_old_parent_id = #{replaceOldParentId,jdbcType=INTEGER},
+      </if>
+      <if test="ifDeleteParent != null" >
+        if_delete_parent = #{ifDeleteParent,jdbcType=INTEGER},
+      </if>
+      <if test="parentName != null" >
+        parent_name = #{parentName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null" >
+        namespace = #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="apiVersion != null" >
+        api_version = #{apiVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceVersion != null" >
+        resource_version = #{resourceVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKeySelectiveStrict" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Pod" >
+    update v2_pod
+    <set >
+      <if test="uuid != null" >
+        uuid = #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="imageGroupId != null" >
+        image_group_id = #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="filePath != null" >
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null" >
+        kind = #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="replacePodId != null" >
+        replace_pod_id = #{replacePodId,jdbcType=INTEGER},
+      </if>
+      <if test="replaceOldParentId != null" >
+        replace_old_parent_id = #{replaceOldParentId,jdbcType=INTEGER},
+      </if>
+      <if test="ifDeleteParent != null" >
+        if_delete_parent = #{ifDeleteParent,jdbcType=INTEGER},
+      </if>
+      <if test="parentName != null" >
+        parent_name = #{parentName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null" >
+        namespace = #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="apiVersion != null" >
+        api_version = #{apiVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceVersion != null" >
+        resource_version = #{resourceVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    and real_name = #{realName,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Pod" >
+    update v2_pod
+    set uuid = #{uuid,jdbcType=VARCHAR},
+    image_group_id = #{imageGroupId,jdbcType=INTEGER},
+    file_path = #{filePath,jdbcType=VARCHAR},
+    kind = #{kind,jdbcType=VARCHAR},
+    replace_pod_id = #{replacePodId,jdbcType=INTEGER},
+    replace_old_parent_id = #{replaceOldParentId,jdbcType=INTEGER},
+    if_delete_parent = #{ifDeleteParent,jdbcType=INTEGER},
+    parent_name = #{parentName,jdbcType=VARCHAR},
+    real_name = #{realName,jdbcType=VARCHAR},
+    namespace = #{namespace,jdbcType=VARCHAR},
+    api_version = #{apiVersion,jdbcType=VARCHAR},
+    resource_version = #{resourceVersion,jdbcType=VARCHAR},
+    update_time = #{updateTime,jdbcType=TIMESTAMP},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectPodByUidAndRealName" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_pod
+    where uuid = #{uuid,jdbcType=VARCHAR} and
+    real_name = #{realName,jdbcType=VARCHAR}
+  </select>
+
+  <delete id="deletePodByUuidAndRealName" parameterType="java.lang.String" >
+    delete from v2_pod
+    where uuid = #{uuid,jdbcType=VARCHAR}
+    and  real_name = #{realName,jdbcType=VARCHAR}
+  </delete>
+
+  <select id="selectAllPodsByApplicationId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_pod t1
+    where t1.image_group_id in
+    (
+    select t2.id from v2_image_group t2
+    where  t2.application_id in (#{applicationId,jdbcType=INTEGER})
+    and t2.delete_time is NULL
+    )
+  </select>
+
+  <select id="selectPodsByDeleteTime" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_pod
+    where image_group_id in(select id from v2_image_group where delete_time is not null)
+  </select>
+</mapper>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2ResourcesMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2Resources" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="image_id" property="imageId" jdbcType="INTEGER" />
+    <result column="max_cpu" property="maxCpu" jdbcType="VARCHAR" />
+    <result column="max_mem" property="maxMem" jdbcType="VARCHAR" />
+    <result column="min_cpu" property="minCpu" jdbcType="VARCHAR" />
+    <result column="min_mem" property="minMem" jdbcType="VARCHAR" />
+    <result column="network" property="network" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="max_cpu_value" property="maxCpuValue" jdbcType="DOUBLE" />
+    <result column="max_mem_value" property="maxMemValue" jdbcType="DOUBLE" />
+    <result column="min_cpu_value" property="minCpuValue" jdbcType="DOUBLE" />
+    <result column="min_mem_value" property="minMemValue" jdbcType="DOUBLE" />
+    <result column="image_group_id" property="imageGroupId" jdbcType="INTEGER" />
+    <result column="version_id" property="versionId" jdbcType="INTEGER" />
+    <result column="application_id" property="applicationId" jdbcType="INTEGER" />
+    <result column="project_id" property="projectId" jdbcType="INTEGER" />
+    <result column="env_id" property="envId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, image_id, max_cpu, max_mem, min_cpu, min_mem, network, create_time, max_cpu_value,
+    max_mem_value, min_cpu_value, min_mem_value, image_group_id, version_id, application_id,
+    project_id, env_id, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_resources
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByImageId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_resources
+    where image_id = #{imageId,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_resources
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByImageId" parameterType="java.lang.Integer" >
+    delete from v2_resources
+    where image_id = #{imageId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Resources" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_resources (id, image_id, max_cpu,
+    max_mem, min_cpu, min_mem,
+    network, create_time, max_cpu_value,
+    max_mem_value, min_cpu_value, min_mem_value,
+    image_group_id, version_id, application_id,
+    project_id, env_id, status
+    )
+    values (#{id,jdbcType=INTEGER}, #{imageId,jdbcType=INTEGER}, #{maxCpu,jdbcType=VARCHAR},
+    #{maxMem,jdbcType=VARCHAR}, #{minCpu,jdbcType=VARCHAR}, #{minMem,jdbcType=VARCHAR},
+    #{network,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{maxCpuValue,jdbcType=DOUBLE},
+    #{maxMemValue,jdbcType=DOUBLE}, #{minCpuValue,jdbcType=DOUBLE}, #{minMemValue,jdbcType=DOUBLE},
+    #{imageGroupId,jdbcType=INTEGER}, #{versionId,jdbcType=INTEGER}, #{applicationId,jdbcType=INTEGER},
+    #{projectId,jdbcType=INTEGER}, #{envId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Resources" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_resources
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="imageId != null" >
+        image_id,
+      </if>
+      <if test="maxCpu != null" >
+        max_cpu,
+      </if>
+      <if test="maxMem != null" >
+        max_mem,
+      </if>
+      <if test="minCpu != null" >
+        min_cpu,
+      </if>
+      <if test="minMem != null" >
+        min_mem,
+      </if>
+      <if test="network != null" >
+        network,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="maxCpuValue != null" >
+        max_cpu_value,
+      </if>
+      <if test="maxMemValue != null" >
+        max_mem_value,
+      </if>
+      <if test="minCpuValue != null" >
+        min_cpu_value,
+      </if>
+      <if test="minMemValue != null" >
+        min_mem_value,
+      </if>
+      <if test="imageGroupId != null" >
+        image_group_id,
+      </if>
+      <if test="versionId != null" >
+        version_id,
+      </if>
+      <if test="applicationId != null" >
+        application_id,
+      </if>
+      <if test="projectId != null" >
+        project_id,
+      </if>
+      <if test="envId != null" >
+        env_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="imageId != null" >
+        #{imageId,jdbcType=INTEGER},
+      </if>
+      <if test="maxCpu != null" >
+        #{maxCpu,jdbcType=VARCHAR},
+      </if>
+      <if test="maxMem != null" >
+        #{maxMem,jdbcType=VARCHAR},
+      </if>
+      <if test="minCpu != null" >
+        #{minCpu,jdbcType=VARCHAR},
+      </if>
+      <if test="minMem != null" >
+        #{minMem,jdbcType=VARCHAR},
+      </if>
+      <if test="network != null" >
+        #{network,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="maxCpuValue != null" >
+        #{maxCpuValue,jdbcType=DOUBLE},
+      </if>
+      <if test="maxMemValue != null" >
+        #{maxMemValue,jdbcType=DOUBLE},
+      </if>
+      <if test="minCpuValue != null" >
+        #{minCpuValue,jdbcType=DOUBLE},
+      </if>
+      <if test="minMemValue != null" >
+        #{minMemValue,jdbcType=DOUBLE},
+      </if>
+      <if test="imageGroupId != null" >
+        #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="versionId != null" >
+        #{versionId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationId != null" >
+        #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null" >
+        #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="envId != null" >
+        #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Resources" >
+    update v2_resources
+    <set >
+      <if test="imageId != null" >
+        image_id = #{imageId,jdbcType=INTEGER},
+      </if>
+      <if test="maxCpu != null" >
+        max_cpu = #{maxCpu,jdbcType=VARCHAR},
+      </if>
+      <if test="maxMem != null" >
+        max_mem = #{maxMem,jdbcType=VARCHAR},
+      </if>
+      <if test="minCpu != null" >
+        min_cpu = #{minCpu,jdbcType=VARCHAR},
+      </if>
+      <if test="minMem != null" >
+        min_mem = #{minMem,jdbcType=VARCHAR},
+      </if>
+      <if test="network != null" >
+        network = #{network,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="maxCpuValue != null" >
+        max_cpu_value = #{maxCpuValue,jdbcType=DOUBLE},
+      </if>
+      <if test="maxMemValue != null" >
+        max_mem_value = #{maxMemValue,jdbcType=DOUBLE},
+      </if>
+      <if test="minCpuValue != null" >
+        min_cpu_value = #{minCpuValue,jdbcType=DOUBLE},
+      </if>
+      <if test="minMemValue != null" >
+        min_mem_value = #{minMemValue,jdbcType=DOUBLE},
+      </if>
+      <if test="imageGroupId != null" >
+        image_group_id = #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="versionId != null" >
+        version_id = #{versionId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationId != null" >
+        application_id = #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null" >
+        project_id = #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="envId != null" >
+        env_id = #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Resources" >
+    update v2_resources
+    set image_id = #{imageId,jdbcType=INTEGER},
+    max_cpu = #{maxCpu,jdbcType=VARCHAR},
+    max_mem = #{maxMem,jdbcType=VARCHAR},
+    min_cpu = #{minCpu,jdbcType=VARCHAR},
+    min_mem = #{minMem,jdbcType=VARCHAR},
+    network = #{network,jdbcType=VARCHAR},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    max_cpu_value = #{maxCpuValue,jdbcType=DOUBLE},
+    max_mem_value = #{maxMemValue,jdbcType=DOUBLE},
+    min_cpu_value = #{minCpuValue,jdbcType=DOUBLE},
+    min_mem_value = #{minMemValue,jdbcType=DOUBLE},
+    image_group_id = #{imageGroupId,jdbcType=INTEGER},
+    version_id = #{versionId,jdbcType=INTEGER},
+    application_id = #{applicationId,jdbcType=INTEGER},
+    project_id = #{projectId,jdbcType=INTEGER},
+    env_id = #{envId,jdbcType=INTEGER},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

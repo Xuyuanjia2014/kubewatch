@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2LabelsMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2Labels" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="image_group_id" property="imageGroupId" jdbcType="INTEGER" />
+    <result column="label_type" property="labelType" jdbcType="VARCHAR" />
+    <result column="label_key" property="labelKey" jdbcType="VARCHAR" />
+    <result column="label_value" property="labelValue" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, image_group_id, label_type, label_key, label_value, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_labels
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByImageGroupId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_labels
+    where image_group_id = #{imageGroupId,jdbcType=INTEGER}
+  </select>
+
+  <select id="select3DistinctByImageGroupId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    DISTINCT label_type,label_key,label_value
+    from v2_labels
+    where image_group_id = #{imageGroupId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByFields" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_labels
+    where id > 0
+    <if test="v2Labels.imageGroupId != null and v2Labels.imageGroupId>0" >
+      and image_group_id = #{v2Labels.imageGroupId,jdbcType=INTEGER}
+    </if>
+    <if test="v2Labels.labelType != null" >
+      and label_type = #{v2Labels.labelType,jdbcType=VARCHAR}
+    </if>
+    <if test="v2Labels.labelKey != null" >
+      and label_key = #{v2Labels.labelKey,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <select id="selectNetworkLabelsByApplicationId" resultMap="BaseResultMap">
+    select
+    *
+    from v2_labels t1
+    where t1.label_type = "podLabels"
+    AND t1.label_key = t1.label_value
+    AND t1.image_group_id IN (
+    SELECT t2.id FROM v2_image_group t2 WHERE application_id = #{applicationId,jdbcType=VARCHAR}
+    )
+  </select>
+
+  <select id="selectApplicationLabelByApplicationId" resultMap="BaseResultMap">
+    select
+    *
+    from v2_labels t1
+    where t1.label_type = "podLabels"
+    AND t1.label_key = "application-real-name"
+    AND t1.image_group_id IN (
+      SELECT t2.id FROM v2_image_group t2 WHERE t2.application_id = #{applicationId,jdbcType=INTEGER}
+    )
+  </select>
+
+  <delete id="deleteByImageGroupId" parameterType="java.lang.Integer" >
+    delete from v2_labels
+    where image_group_id = #{imageGroupId,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_labels
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Labels" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_labels (id, image_group_id, label_type,
+    label_key, label_value, status
+    )
+    values (#{id,jdbcType=INTEGER}, #{imageGroupId,jdbcType=INTEGER}, #{labelType,jdbcType=VARCHAR},
+    #{labelKey,jdbcType=VARCHAR}, #{labelValue,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Labels" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_labels
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="imageGroupId != null" >
+        image_group_id,
+      </if>
+      <if test="labelType != null" >
+        label_type,
+      </if>
+      <if test="labelKey != null" >
+        label_key,
+      </if>
+      <if test="labelValue != null" >
+        label_value,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="imageGroupId != null" >
+        #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="labelType != null" >
+        #{labelType,jdbcType=VARCHAR},
+      </if>
+      <if test="labelKey != null" >
+        #{labelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="labelValue != null" >
+        #{labelValue,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Labels" >
+    update v2_labels
+    <set >
+      <if test="imageGroupId != null" >
+        image_group_id = #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="labelType != null" >
+        label_type = #{labelType,jdbcType=VARCHAR},
+      </if>
+      <if test="labelKey != null" >
+        label_key = #{labelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="labelValue != null" >
+        label_value = #{labelValue,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Labels" >
+    update v2_labels
+    set image_group_id = #{imageGroupId,jdbcType=INTEGER},
+    label_type = #{labelType,jdbcType=VARCHAR},
+    label_key = #{labelKey,jdbcType=VARCHAR},
+    label_value = #{labelValue,jdbcType=VARCHAR},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

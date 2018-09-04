@@ -1,0 +1,4 @@
+apiVersion: kubernetes
+kind: Namespace
+handlers:
+- cn.abcsys.devops.v3.handler.namespace.NamespaceHandler

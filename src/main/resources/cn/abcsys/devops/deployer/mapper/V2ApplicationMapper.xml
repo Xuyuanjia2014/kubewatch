@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2ApplicationMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2Application" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="project_id" property="projectId" jdbcType="INTEGER" />
+    <result column="application_name" property="applicationName" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="platform_type" property="platformType" jdbcType="VARCHAR" />
+    <result column="affair_type" property="affairType" jdbcType="VARCHAR" />
+    <result column="module_type" property="moduleType" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="delete_time" property="deleteTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, project_id, application_name, url, description, real_name, platform_type, affair_type,
+    module_type, create_time, update_time, delete_time, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_application
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectExisingByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_application
+    where id = #{id,jdbcType=INTEGER}
+    and status = "created"
+    and delete_time IS  NULL
+  </select>
+
+  <select id="selectByProjectId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_application
+    where project_id = #{projectId,jdbcType=INTEGER}
+    and status = "created"
+    and delete_time IS  NULL
+    limit #{start,jdbcType=INTEGER}, #{num,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectTop5UpdateByProjectIdList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_application
+    where project_id IN
+    <foreach collection="list" item="projectId" index="index"
+             open="(" close=")" separator=",">
+      #{projectId}
+    </foreach>
+    and delete_time IS  NULL
+    ORDER BY update_time
+    DESC
+    limit 0,5
+  </select>
+
+  <select id="selectDescUpdateByProjectIdList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_application
+    where project_id IN
+    <foreach collection="list" item="projectId" index="index"
+             open="(" close=")" separator=",">
+      #{projectId}
+    </foreach>
+    and delete_time IS  NULL
+    ORDER BY update_time
+    DESC
+  </select>
+
+  <select id="selectByApplicationName" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_application
+    where project_id = #{projectId,jdbcType=INTEGER}
+    and status = "created"
+    and delete_time IS  NULL
+    and application_name LIKE CONCAT('%', #{appName,jdbcType=VARCHAR}, '%')
+    limit #{start,jdbcType=INTEGER}, #{num,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByProjectIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_application
+    where status = "created"
+    <if test="projectIds != null and projectIds.length > 0" >
+      and project_id IN
+      <foreach collection="projectIds" item="eachId" index="index"
+               open="(" close=")" separator=",">
+        #{eachId,jdbcType=INTEGER}
+      </foreach>
+    </if>
+    and delete_time IS  NULL
+    limit #{start,jdbcType=INTEGER}, #{num,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectCountByProjectIds" resultType="java.lang.Integer">
+    select
+    COUNT(*)
+    from v2_application
+    where status = "created"
+    <if test="projectIds != null and projectIds.length > 0" >
+      and project_id IN
+      <foreach collection="projectIds" item="eachId" index="index"
+               open="(" close=")" separator=",">
+        #{eachId,jdbcType=INTEGER}
+      </foreach>
+    </if>
+    and delete_time IS  NULL
+  </select>
+
+  <select id="selectProjectByApplicationName" resultType="java.lang.Integer">
+    select
+    DISTINCT project_id
+    from v2_application
+    where status = "created"
+    and application_name LIKE CONCAT('%', #{appName,jdbcType=VARCHAR}, '%')
+    and delete_time IS  NULL
+    limit #{start,jdbcType=INTEGER}, #{num,jdbcType=INTEGER}
+  </select>
+
+  <select id="getTotalNumOfProjectByApplicationName" resultType="java.lang.Integer" >
+    select count(DISTINCT project_id)
+    from v2_application t1
+    where t1.application_name LIKE CONCAT('%', #{appName,jdbcType=VARCHAR}, '%')
+    and t1.status = "created"
+    and t1.delete_time IS  NULL
+  </select>
+
+  <select id="getTotalNumByProjectId" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_application t1
+    where t1.project_id  =  #{projectId,jdbcType=INTEGER}
+    and t1.status = "created"
+    and t1.delete_time IS  NULL
+  </select>
+
+  <select id="getTotalNumByApplicationName" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_application t1
+    where t1.project_id = #{projectId,jdbcType=INTEGER}
+    and t1.status = "created"
+    and t1.application_name LIKE CONCAT('%', #{appName,jdbcType=VARCHAR}, '%')
+    and t1.delete_time IS  NULL
+  </select>
+
+  <select id="checkApplicationName" resultType="java.lang.Integer">
+    select count(*)
+    from v2_application t1
+    where t1.application_name = #{name,jdbcType=VARCHAR}
+    and t1.project_id  =  #{project.projectId,jdbcType=INTEGER}
+    and status = "created"
+    and t1.delete_time IS  NULL
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_application
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Application" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_application (id, project_id, application_name,
+    url, description, real_name,
+    platform_type, affair_type, module_type,
+    create_time, update_time, delete_time,
+    status)
+    values (#{id,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER}, #{applicationName,jdbcType=VARCHAR},
+    #{url,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR},
+    #{platformType,jdbcType=VARCHAR}, #{affairType,jdbcType=VARCHAR}, #{moduleType,jdbcType=VARCHAR},
+    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{deleteTime,jdbcType=TIMESTAMP},
+    #{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Application" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_application
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="projectId != null" >
+        project_id,
+      </if>
+      <if test="applicationName != null" >
+        application_name,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="platformType != null" >
+        platform_type,
+      </if>
+      <if test="affairType != null" >
+        affair_type,
+      </if>
+      <if test="moduleType != null" >
+        module_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="deleteTime != null" >
+        delete_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null" >
+        #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationName != null" >
+        #{applicationName,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="platformType != null" >
+        #{platformType,jdbcType=VARCHAR},
+      </if>
+      <if test="affairType != null" >
+        #{affairType,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleType != null" >
+        #{moduleType,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteTime != null" >
+        #{deleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Application" >
+    update v2_application
+    <set >
+      <if test="projectId != null" >
+        project_id = #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationName != null" >
+        application_name = #{applicationName,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="platformType != null" >
+        platform_type = #{platformType,jdbcType=VARCHAR},
+      </if>
+      <if test="affairType != null" >
+        affair_type = #{affairType,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleType != null" >
+        module_type = #{moduleType,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteTime != null" >
+        delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Application" >
+    update v2_application
+    set project_id = #{projectId,jdbcType=INTEGER},
+    application_name = #{applicationName,jdbcType=VARCHAR},
+    url = #{url,jdbcType=VARCHAR},
+    description = #{description,jdbcType=VARCHAR},
+    real_name = #{realName,jdbcType=VARCHAR},
+    platform_type = #{platformType,jdbcType=VARCHAR},
+    affair_type = #{affairType,jdbcType=VARCHAR},
+    module_type = #{moduleType,jdbcType=VARCHAR},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    update_time = #{updateTime,jdbcType=TIMESTAMP},
+    delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <select id="insertOrUpdateApplication" statementType="CALLABLE" >
+    {call insertOrUpdateApplication(
+    #{project_id, mode=IN},
+    #{controller_name, mode=IN},
+    #{platform, mode=IN},
+    #{affair_type, mode=IN},
+    #{create_time, mode=IN},
+    #{application_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrUpdateApplicationIfNotExist" statementType="CALLABLE" >
+    {call insertOrUpdateApplicationIfNotExist(
+    #{project_id, mode=IN},
+    #{controller_name, mode=IN},
+    #{platform, mode=IN},
+    #{affair_type, mode=IN},
+    #{create_time, mode=IN},
+    #{application_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="getApplication" statementType="CALLABLE" >
+    {call getApplication(
+    #{project_id, mode=IN},
+    #{controller_name, mode=IN},
+    #{platform, mode=IN},
+    #{affair_type, mode=IN},
+    #{create_time, mode=IN},
+    #{application_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="selectByMultipleFields" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_application
+    where id > 0
+    and delete_time IS NULL
+    <if test="application.projectId != null" >
+      and project_id = #{application.projectId ,jdbcType=INTEGER}
+    </if>
+    <if test="application.applicationName != null" >
+      and application_name = #{application.applicationName ,jdbcType=INTEGER}
+    </if>
+  </select>
+</mapper>

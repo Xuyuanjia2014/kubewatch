@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2VolumesMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2Volumes" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="image_group_id" property="imageGroupId" jdbcType="INTEGER" />
+    <result column="host_path" property="hostPath" jdbcType="VARCHAR" />
+    <result column="volume_name" property="volumeName" jdbcType="VARCHAR" />
+    <result column="volume_type" property="volumeType" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="version_id" property="versionId" jdbcType="INTEGER" />
+    <result column="application_id" property="applicationId" jdbcType="INTEGER" />
+    <result column="project_id" property="projectId" jdbcType="INTEGER" />
+    <result column="env_id" property="envId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, image_group_id, host_path, volume_name, volume_type, create_time, version_id,
+    application_id, project_id, env_id, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_volumes
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="getTotalNumByEnvId" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_volumes t1
+    where t1.env_id  =  #{envId,jdbcType=INTEGER}
+  </select>
+
+  <select id="getTotalNumByEnvIdAndProjectIds" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_volumes t1
+    where id > 0
+    <if test="envId != null" >
+    AND t1.env_id  =  #{envId,jdbcType=INTEGER}
+    </if>
+    <if test="projectIds != null" >
+      AND t1.project_id IN
+      <foreach collection="projectIds" item="eachId" index="index"
+               open="(" close=")" separator=",">
+        #{eachId,jdbcType=INTEGER}
+      </foreach>
+    </if>
+  </select>
+
+  <select id="selectByImageGroupId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_volumes
+    where image_group_id = #{imageGroupId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectCountPath" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_volumes t1
+    where t1.id >0
+    <if test="record.instanceVolumesPath != null" >
+      and t1.host_path LIKE '%${record.instanceVolumesPath}%'
+    </if>
+    <if test="runtimeId != null" >
+      and t1.env_id = #{runtimeId,jdbcType=INTEGER}
+    </if>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_volumes
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByImageGroupId" parameterType="java.lang.Integer" >
+    delete from v2_volumes
+    where image_group_id = #{imageGroupId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Volumes" useGeneratedKeys="true" keyProperty="id" >
+    insert into v2_volumes (id, image_group_id, host_path,
+    volume_name, volume_type, create_time,
+    version_id, application_id, project_id,
+    env_id, status)
+    values (#{id,jdbcType=INTEGER}, #{imageGroupId,jdbcType=INTEGER}, #{hostPath,jdbcType=VARCHAR},
+    #{volumeName,jdbcType=VARCHAR}, #{volumeType,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+    #{versionId,jdbcType=INTEGER}, #{applicationId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER},
+    #{envId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Volumes" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_volumes
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="imageGroupId != null" >
+        image_group_id,
+      </if>
+      <if test="hostPath != null" >
+        host_path,
+      </if>
+      <if test="volumeName != null" >
+        volume_name,
+      </if>
+      <if test="volumeType != null" >
+        volume_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="versionId != null" >
+        version_id,
+      </if>
+      <if test="applicationId != null" >
+        application_id,
+      </if>
+      <if test="projectId != null" >
+        project_id,
+      </if>
+      <if test="envId != null" >
+        env_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="imageGroupId != null" >
+        #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="hostPath != null" >
+        #{hostPath,jdbcType=VARCHAR},
+      </if>
+      <if test="volumeName != null" >
+        #{volumeName,jdbcType=VARCHAR},
+      </if>
+      <if test="volumeType != null" >
+        #{volumeType,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="versionId != null" >
+        #{versionId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationId != null" >
+        #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null" >
+        #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="envId != null" >
+        #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Volumes" >
+    update v2_volumes
+    <set >
+      <if test="imageGroupId != null" >
+        image_group_id = #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="hostPath != null" >
+        host_path = #{hostPath,jdbcType=VARCHAR},
+      </if>
+      <if test="volumeName != null" >
+        volume_name = #{volumeName,jdbcType=VARCHAR},
+      </if>
+      <if test="volumeType != null" >
+        volume_type = #{volumeType,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="versionId != null" >
+        version_id = #{versionId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationId != null" >
+        application_id = #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null" >
+        project_id = #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="envId != null" >
+        env_id = #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Volumes" >
+    update v2_volumes
+    set image_group_id = #{imageGroupId,jdbcType=INTEGER},
+    host_path = #{hostPath,jdbcType=VARCHAR},
+    volume_name = #{volumeName,jdbcType=VARCHAR},
+    volume_type = #{volumeType,jdbcType=VARCHAR},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    version_id = #{versionId,jdbcType=INTEGER},
+    application_id = #{applicationId,jdbcType=INTEGER},
+    project_id = #{projectId,jdbcType=INTEGER},
+    env_id = #{envId,jdbcType=INTEGER},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

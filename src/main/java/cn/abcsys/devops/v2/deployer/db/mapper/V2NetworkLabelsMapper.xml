@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2NetworkLabelsMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2NetworkLabels" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="network_policy_id" property="networkPolicyId" jdbcType="INTEGER" />
+    <result column="label_type" property="labelType" jdbcType="VARCHAR" />
+    <result column="label_key" property="labelKey" jdbcType="VARCHAR" />
+    <result column="label_value" property="labelValue" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, network_policy_id, label_type, label_key, label_value, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_network_labels
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByNetworkPolicyId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_network_labels
+    where network_policy_id = #{networkPolicyId,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByNetworkPolicyId" parameterType="java.lang.Integer" >
+    delete from v2_network_labels
+    where network_policy_id = #{networkPolicyId,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_network_labels
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkLabels" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_network_labels (id, network_policy_id, label_type,
+    label_key, label_value, status
+    )
+    values (#{id,jdbcType=INTEGER}, #{networkPolicyId,jdbcType=INTEGER}, #{labelType,jdbcType=VARCHAR},
+    #{labelKey,jdbcType=VARCHAR}, #{labelValue,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkLabels" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_network_labels
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="networkPolicyId != null" >
+        network_policy_id,
+      </if>
+      <if test="labelType != null" >
+        label_type,
+      </if>
+      <if test="labelKey != null" >
+        label_key,
+      </if>
+      <if test="labelValue != null" >
+        label_value,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="networkPolicyId != null" >
+        #{networkPolicyId,jdbcType=INTEGER},
+      </if>
+      <if test="labelType != null" >
+        #{labelType,jdbcType=VARCHAR},
+      </if>
+      <if test="labelKey != null" >
+        #{labelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="labelValue != null" >
+        #{labelValue,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkLabels" >
+    update v2_network_labels
+    <set >
+      <if test="networkPolicyId != null" >
+        network_policy_id = #{networkPolicyId,jdbcType=INTEGER},
+      </if>
+      <if test="labelType != null" >
+        label_type = #{labelType,jdbcType=VARCHAR},
+      </if>
+      <if test="labelKey != null" >
+        label_key = #{labelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="labelValue != null" >
+        label_value = #{labelValue,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkLabels" >
+    update v2_network_labels
+    set network_policy_id = #{networkPolicyId,jdbcType=INTEGER},
+    label_type = #{labelType,jdbcType=VARCHAR},
+    label_key = #{labelKey,jdbcType=VARCHAR},
+    label_value = #{labelValue,jdbcType=VARCHAR},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

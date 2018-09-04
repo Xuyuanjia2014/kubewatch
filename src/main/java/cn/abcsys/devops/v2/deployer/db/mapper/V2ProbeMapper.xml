@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2ProbeMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2Probe" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="image_id" property="imageId" jdbcType="INTEGER" />
+    <result column="probe_type" property="probeType" jdbcType="VARCHAR" />
+    <result column="request_type" property="requestType" jdbcType="VARCHAR" />
+    <result column="probe_path" property="probePath" jdbcType="VARCHAR" />
+    <result column="probe_port" property="probePort" jdbcType="INTEGER" />
+    <result column="scheme" property="scheme" jdbcType="VARCHAR" />
+    <result column="initial_delay_seconds" property="initialDelaySeconds" jdbcType="INTEGER" />
+    <result column="timeout_seconds" property="timeoutSeconds" jdbcType="INTEGER" />
+    <result column="success_threshold" property="successThreshold" jdbcType="INTEGER" />
+    <result column="failure_threshold" property="failureThreshold" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, image_id, probe_type, request_type, probe_path, probe_port, scheme, initial_delay_seconds,
+    timeout_seconds, success_threshold, failure_threshold, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_probe
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByImageId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_probe
+    where image_id = #{imageId,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_probe
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByImageId" parameterType="java.lang.Integer" >
+    delete from v2_probe
+    where image_id = #{imageId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Probe" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_probe (id, image_id, probe_type,
+    request_type, probe_path, probe_port,
+    scheme, initial_delay_seconds, timeout_seconds,
+    success_threshold, failure_threshold, status
+    )
+    values (#{id,jdbcType=INTEGER}, #{imageId,jdbcType=INTEGER}, #{probeType,jdbcType=VARCHAR},
+    #{requestType,jdbcType=VARCHAR}, #{probePath,jdbcType=VARCHAR}, #{probePort,jdbcType=INTEGER},
+    #{scheme,jdbcType=VARCHAR}, #{initialDelaySeconds,jdbcType=INTEGER}, #{timeoutSeconds,jdbcType=INTEGER},
+    #{successThreshold,jdbcType=INTEGER}, #{failureThreshold,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Probe" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_probe
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="imageId != null" >
+        image_id,
+      </if>
+      <if test="probeType != null" >
+        probe_type,
+      </if>
+      <if test="requestType != null" >
+        request_type,
+      </if>
+      <if test="probePath != null" >
+        probe_path,
+      </if>
+      <if test="probePort != null" >
+        probe_port,
+      </if>
+      <if test="scheme != null" >
+        scheme,
+      </if>
+      <if test="initialDelaySeconds != null" >
+        initial_delay_seconds,
+      </if>
+      <if test="timeoutSeconds != null" >
+        timeout_seconds,
+      </if>
+      <if test="successThreshold != null" >
+        success_threshold,
+      </if>
+      <if test="failureThreshold != null" >
+        failure_threshold,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="imageId != null" >
+        #{imageId,jdbcType=INTEGER},
+      </if>
+      <if test="probeType != null" >
+        #{probeType,jdbcType=VARCHAR},
+      </if>
+      <if test="requestType != null" >
+        #{requestType,jdbcType=VARCHAR},
+      </if>
+      <if test="probePath != null" >
+        #{probePath,jdbcType=VARCHAR},
+      </if>
+      <if test="probePort != null" >
+        #{probePort,jdbcType=INTEGER},
+      </if>
+      <if test="scheme != null" >
+        #{scheme,jdbcType=VARCHAR},
+      </if>
+      <if test="initialDelaySeconds != null" >
+        #{initialDelaySeconds,jdbcType=INTEGER},
+      </if>
+      <if test="timeoutSeconds != null" >
+        #{timeoutSeconds,jdbcType=INTEGER},
+      </if>
+      <if test="successThreshold != null" >
+        #{successThreshold,jdbcType=INTEGER},
+      </if>
+      <if test="failureThreshold != null" >
+        #{failureThreshold,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Probe" >
+    update v2_probe
+    <set >
+      <if test="imageId != null" >
+        image_id = #{imageId,jdbcType=INTEGER},
+      </if>
+      <if test="probeType != null" >
+        probe_type = #{probeType,jdbcType=VARCHAR},
+      </if>
+      <if test="requestType != null" >
+        request_type = #{requestType,jdbcType=VARCHAR},
+      </if>
+      <if test="probePath != null" >
+        probe_path = #{probePath,jdbcType=VARCHAR},
+      </if>
+      <if test="probePort != null" >
+        probe_port = #{probePort,jdbcType=INTEGER},
+      </if>
+      <if test="scheme != null" >
+        scheme = #{scheme,jdbcType=VARCHAR},
+      </if>
+      <if test="initialDelaySeconds != null" >
+        initial_delay_seconds = #{initialDelaySeconds,jdbcType=INTEGER},
+      </if>
+      <if test="timeoutSeconds != null" >
+        timeout_seconds = #{timeoutSeconds,jdbcType=INTEGER},
+      </if>
+      <if test="successThreshold != null" >
+        success_threshold = #{successThreshold,jdbcType=INTEGER},
+      </if>
+      <if test="failureThreshold != null" >
+        failure_threshold = #{failureThreshold,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Probe" >
+    update v2_probe
+    set image_id = #{imageId,jdbcType=INTEGER},
+    probe_type = #{probeType,jdbcType=VARCHAR},
+    request_type = #{requestType,jdbcType=VARCHAR},
+    probe_path = #{probePath,jdbcType=VARCHAR},
+    probe_port = #{probePort,jdbcType=INTEGER},
+    scheme = #{scheme,jdbcType=VARCHAR},
+    initial_delay_seconds = #{initialDelaySeconds,jdbcType=INTEGER},
+    timeout_seconds = #{timeoutSeconds,jdbcType=INTEGER},
+    success_threshold = #{successThreshold,jdbcType=INTEGER},
+    failure_threshold = #{failureThreshold,jdbcType=INTEGER},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

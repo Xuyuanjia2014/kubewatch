@@ -1,0 +1,8 @@
+apiVersion: openshift
+kind: DaemonSet
+properties:
+  default: default
+handlers:
+- cn.abcsys.devops.v3.handler.daemonset.DsApplicationHandler
+- cn.abcsys.devops.v3.handler.daemonset.DsConfigurationHandler
+- cn.abcsys.devops.v3.handler.utils.StatusHandler

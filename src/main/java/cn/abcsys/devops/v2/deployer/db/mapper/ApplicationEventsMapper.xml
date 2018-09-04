@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.ApplicationEventsMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.ApplicationEvents">
+    <id column="application_event_id" jdbcType="INTEGER" property="applicationEventId" />
+    <result column="application_core_id" jdbcType="INTEGER" property="applicationCoreId" />
+    <result column="application_event_type" jdbcType="VARCHAR" property="applicationEventType" />
+    <result column="application_event_current_status" jdbcType="VARCHAR" property="applicationEventCurrentStatus" />
+    <result column="application_event_policy" jdbcType="VARCHAR" property="applicationEventPolicy" />
+    <result column="application_event_start_datetime" jdbcType="TIMESTAMP" property="applicationEventStartDatetime" />
+    <result column="application_event_finish_datetime" jdbcType="TIMESTAMP" property="applicationEventFinishDatetime" />
+    <result column="application_event_description" jdbcType="VARCHAR" property="applicationEventDescription" />
+    <result column="env_id" jdbcType="INTEGER" property="envId" />
+    <result column="application_event_description2" jdbcType="VARCHAR" property="applicationEventDescription2" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    application_event_id, application_core_id, application_event_type, application_event_current_status,
+    application_event_policy, application_event_start_datetime, application_event_finish_datetime,
+    application_event_description, env_id, application_event_description2
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from application_events
+    where application_event_id = #{applicationEventId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByApplicationCoreId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from application_events
+    where
+    <if test="record.applicationCoreId != null" >
+      application_core_id =  #{record.applicationCoreId,jdbcType=INTEGER}
+    </if>
+    ORDER BY application_event_id DESC
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByEnvId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from application_events
+    where
+    <if test="record.envId != null" >
+      env_id =  #{record.envId,jdbcType=INTEGER}
+    </if>
+    ORDER BY application_event_id DESC
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByEnvIdNew" resultMap="BaseResultMap">
+    select
+    *
+    from application_events t1
+    where
+    t1.application_core_id in (
+    SELECT t2.id from v2_application t2 WHERE t2.project_id IN (
+    SELECT t3.project_id FROM project_core t3 WHERE t3.project_runtime_id = #{record.envId,jdbcType=INTEGER}
+    )
+    )
+    ORDER BY t1.application_event_id DESC
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByProjectIds" resultMap="BaseResultMap">
+    select
+    *
+    from application_events t1
+    where
+    t1.application_core_id in (
+    SELECT t2.id from v2_application t2 WHERE t2.project_id IN
+    <foreach collection="projectIds" item="eachId" index="index"
+             open="(" close=")" separator=",">
+      #{eachId,jdbcType=INTEGER}
+    </foreach>
+    )
+    ORDER BY t1.application_event_id DESC
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectCountByProjectIds" resultType="java.lang.Integer">
+    select
+    COUNT(*)
+    from application_events t1
+    where
+    t1.application_core_id in (
+    SELECT t2.id from v2_application t2 WHERE t2.project_id IN
+    <foreach collection="projectIds" item="eachId" index="index"
+             open="(" close=")" separator=",">
+      #{eachId,jdbcType=INTEGER}
+    </foreach>
+    )
+    ORDER BY t1.application_event_id DESC
+  </select>
+
+  <select id="selectByEnvIdCountNew" resultType="java.lang.Integer">
+    select
+    COUNT(*)
+    from application_events t1
+    where
+    t1.application_core_id in (
+    SELECT t2.id from v2_application t2 WHERE t2.project_id IN (
+    SELECT t3.project_id FROM project_core t3 WHERE t3.project_runtime_id = #{record.envId,jdbcType=INTEGER}
+    )
+    )
+  </select>
+
+  <select id="selectByMulitipleFields" resultMap="BaseResultMap">
+    select t1.*
+    from application_events t1
+    where t1.application_core_id IN (
+    select t2.application_core_id from application_core t2 where t2.application_core_id > 0
+    <if test="record.applicationRuntimeId != null" >
+      and t2.application_runtime_id =  #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.applicationCoreUsername != null" >
+      and t2.application_core_username =  #{record.applicationCoreUsername,jdbcType=VARCHAR}
+    </if>
+    )
+    order BY t1.application_event_id DESC
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectCountByMulitipleFields" resultType="java.lang.Integer">
+    select count(t1.application_core_id)
+    from application_events t1
+    where t1.application_core_id IN (
+    select t2.application_core_id from application_core t2 where t2.application_core_id > 0
+    <if test="record.applicationRuntimeId != null" >
+      and t2.application_runtime_id =  #{record.applicationRuntimeId,jdbcType=INTEGER}
+    </if>
+    <if test="record.applicationCoreUsername != null" >
+      and t2.application_core_username =  #{record.applicationCoreUsername,jdbcType=VARCHAR}
+    </if>
+    )
+  </select>
+
+  <select id="selectCountByApplicationCoreId" resultType="java.lang.Integer" parameterType="cn.abcsys.devops.v2.deployer.db.model.ApplicationEvents">
+    select count(*)
+    from application_events
+    where
+    <if test="applicationCoreId != null" >
+      application_core_id =  #{applicationCoreId,jdbcType=INTEGER}
+    </if>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from application_events
+    where application_event_id = #{applicationEventId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.ApplicationEvents" useGeneratedKeys="true" keyProperty="applicationEventId">
+    insert into application_events (application_event_id, application_core_id,
+    application_event_type, application_event_current_status,
+    application_event_policy, application_event_start_datetime,
+    application_event_finish_datetime, application_event_description,
+    env_id, application_event_description2)
+    values (#{applicationEventId,jdbcType=INTEGER}, #{applicationCoreId,jdbcType=INTEGER},
+    #{applicationEventType,jdbcType=VARCHAR}, #{applicationEventCurrentStatus,jdbcType=VARCHAR},
+    #{applicationEventPolicy,jdbcType=VARCHAR}, #{applicationEventStartDatetime,jdbcType=TIMESTAMP},
+    #{applicationEventFinishDatetime,jdbcType=TIMESTAMP}, #{applicationEventDescription,jdbcType=VARCHAR},
+    #{envId,jdbcType=INTEGER}, #{applicationEventDescription2,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.ApplicationEvents" useGeneratedKeys="true" keyProperty="applicationEventId">
+    insert into application_events
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="applicationEventId != null">
+        application_event_id,
+      </if>
+      <if test="applicationCoreId != null">
+        application_core_id,
+      </if>
+      <if test="applicationEventType != null">
+        application_event_type,
+      </if>
+      <if test="applicationEventCurrentStatus != null">
+        application_event_current_status,
+      </if>
+      <if test="applicationEventPolicy != null">
+        application_event_policy,
+      </if>
+      <if test="applicationEventStartDatetime != null">
+        application_event_start_datetime,
+      </if>
+      <if test="applicationEventFinishDatetime != null">
+        application_event_finish_datetime,
+      </if>
+      <if test="applicationEventDescription != null">
+        application_event_description,
+      </if>
+      <if test="envId != null">
+        env_id,
+      </if>
+      <if test="applicationEventDescription2 != null">
+        application_event_description2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="applicationEventId != null">
+        #{applicationEventId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationCoreId != null">
+        #{applicationCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationEventType != null">
+        #{applicationEventType,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationEventCurrentStatus != null">
+        #{applicationEventCurrentStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationEventPolicy != null">
+        #{applicationEventPolicy,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationEventStartDatetime != null">
+        #{applicationEventStartDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applicationEventFinishDatetime != null">
+        #{applicationEventFinishDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applicationEventDescription != null">
+        #{applicationEventDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="envId != null">
+        #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationEventDescription2 != null">
+        #{applicationEventDescription2,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.ApplicationEvents">
+    update application_events
+    <set>
+      <if test="applicationCoreId != null">
+        application_core_id = #{applicationCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationEventType != null">
+        application_event_type = #{applicationEventType,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationEventCurrentStatus != null">
+        application_event_current_status = #{applicationEventCurrentStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationEventPolicy != null">
+        application_event_policy = #{applicationEventPolicy,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationEventStartDatetime != null">
+        application_event_start_datetime = #{applicationEventStartDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applicationEventFinishDatetime != null">
+        application_event_finish_datetime = #{applicationEventFinishDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applicationEventDescription != null">
+        application_event_description = #{applicationEventDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="envId != null">
+        env_id = #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationEventDescription2 != null">
+        application_event_description2 = #{applicationEventDescription2,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where application_event_id = #{applicationEventId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.ApplicationEvents">
+    update application_events
+    set application_core_id = #{applicationCoreId,jdbcType=INTEGER},
+    application_event_type = #{applicationEventType,jdbcType=VARCHAR},
+    application_event_current_status = #{applicationEventCurrentStatus,jdbcType=VARCHAR},
+    application_event_policy = #{applicationEventPolicy,jdbcType=VARCHAR},
+    application_event_start_datetime = #{applicationEventStartDatetime,jdbcType=TIMESTAMP},
+    application_event_finish_datetime = #{applicationEventFinishDatetime,jdbcType=TIMESTAMP},
+    application_event_description = #{applicationEventDescription,jdbcType=VARCHAR},
+    env_id = #{envId,jdbcType=INTEGER},
+    application_event_description2 = #{applicationEventDescription2,jdbcType=VARCHAR}
+    where application_event_id = #{applicationEventId,jdbcType=INTEGER}
+  </update>
+  <select id="selectCountByApplicationEvent" resultType="java.lang.Integer" parameterType="cn.abcsys.devops.v2.deployer.db.model.ApplicationEvents">
+    select count(*)
+    from application_events
+    where 1=1
+    <if test="applicationCoreId != null" >
+      and application_core_id =  #{applicationCoreId,jdbcType=INTEGER}
+    </if>
+    <if test="applicationEventType != null" >
+      and application_event_type =  #{applicationEventType,jdbcType=VARCHAR}
+    </if>
+    <if test="applicationEventDescription != null" >
+      and application_event_description =  #{applicationEventDescription,jdbcType=VARCHAR}
+    </if>
+    <if test="envId != null" >
+      and env_id =  #{envId,jdbcType=INTEGER}
+    </if>
+  </select>
+</mapper>

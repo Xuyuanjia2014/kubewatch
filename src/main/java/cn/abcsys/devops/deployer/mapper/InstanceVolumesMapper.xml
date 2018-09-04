@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.deployer.dao.InstanceVolumesMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.deployer.model.InstanceVolumes" >
+    <id column="instance_volumes_id" property="instanceVolumesId" jdbcType="INTEGER" />
+    <result column="instance_core_id" property="instanceCoreId" jdbcType="INTEGER" />
+    <result column="instance_volumes_type" property="instanceVolumesType" jdbcType="VARCHAR" />
+    <result column="instance_volumes_name" property="instanceVolumesName" jdbcType="VARCHAR" />
+    <result column="instance_volumes_mount_path" property="instanceVolumesMountPath" jdbcType="VARCHAR" />
+    <result column="instance_volumes_server" property="instanceVolumesServer" jdbcType="VARCHAR" />
+    <result column="instance_volumes_path" property="instanceVolumesPath" jdbcType="VARCHAR" />
+    <result column="instance_volumes_create_datetime" property="instanceVolumesCreateDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_volumes_delete_datetime" property="instanceVolumesDeleteDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_volumes_current_status" property="instanceVolumesCurrentStatus" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    instance_volumes_id, instance_core_id, instance_volumes_type, instance_volumes_name, 
+    instance_volumes_mount_path, instance_volumes_server, instance_volumes_path, instance_volumes_create_datetime, 
+    instance_volumes_delete_datetime, instance_volumes_current_status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from instance_volumes
+    where instance_volumes_id = #{instanceVolumesId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByInstanceCoreId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from instance_volumes
+    where instance_core_id = #{instanceCoreId,jdbcType=INTEGER}
+  </select>
+  <select id="selectLikeByInstanceVolumesName" resultMap="BaseResultMap" >
+    select *
+      from instance_volumes t1
+    where t1.instance_volumes_id >0
+    <if test="record.instanceVolumesName != null" >
+      and t1.instance_volumes_name like  '%${record.instanceVolumesName}%'
+    </if>
+    and (select t2.instance_core_id from instance_core t2
+    where t2.instance_core_id >0
+    <if test="runtimeId != null" >
+      and t2.application_runtime_id = #{runtimeId,jdbcType=INTEGER}
+    </if>
+    and t2.instance_core_id = t1.instance_core_id )= t1.instance_core_id
+    ORDER  BY t1.instance_volumes_id DESC
+    limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectLikeCountByInstanceVolumesName" resultType="java.lang.Integer" >
+    select count(*)
+    from instance_volumes t1
+    where t1.instance_volumes_id >0
+    <if test="record.instanceVolumesName != null" >
+       and t1.instance_volumes_name like  '%${record.instanceVolumesName}%'
+    </if>
+    and (select t2.instance_core_id from instance_core t2
+    where t2.instance_core_id >0
+    <if test="runtimeId != null" >
+     and t2.application_runtime_id = #{runtimeId,jdbcType=INTEGER}
+    </if>
+    and t2.instance_core_id = t1.instance_core_id )= t1.instance_core_id
+  </select>
+
+  <select id="selectCountPath" resultType="java.lang.Integer" >
+    select count(*)
+    from instance_volumes t1
+    where t1.instance_volumes_id >0
+    <if test="record.instanceVolumesPath != null" >
+      and t1.instance_volumes_path = #{record.instanceVolumesPath}
+    </if>
+    and (select t2.instance_core_id from instance_core t2
+    where t2.instance_core_id >0
+    <if test="runtimeId != null" >
+      and t2.application_runtime_id = #{runtimeId,jdbcType=INTEGER}
+    </if>
+    and t2.instance_core_id = t1.instance_core_id
+    and t2.instance_current_status = "created")= t1.instance_core_id
+  </select>
+
+  <select id="selectByInstanceVolumesName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from instance_volumes
+    where instance_volumes_name = #{instanceVolumesName,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from instance_volumes
+    where instance_volumes_id = #{instanceVolumesId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.deployer.model.InstanceVolumes" >
+    insert into instance_volumes (instance_volumes_id, instance_core_id, 
+      instance_volumes_type, instance_volumes_name, 
+      instance_volumes_mount_path, instance_volumes_server, 
+      instance_volumes_path, instance_volumes_create_datetime, 
+      instance_volumes_delete_datetime, instance_volumes_current_status
+      )
+    values (#{instanceVolumesId,jdbcType=INTEGER}, #{instanceCoreId,jdbcType=INTEGER}, 
+      #{instanceVolumesType,jdbcType=VARCHAR}, #{instanceVolumesName,jdbcType=VARCHAR}, 
+      #{instanceVolumesMountPath,jdbcType=VARCHAR}, #{instanceVolumesServer,jdbcType=VARCHAR}, 
+      #{instanceVolumesPath,jdbcType=VARCHAR}, #{instanceVolumesCreateDatetime,jdbcType=TIMESTAMP}, 
+      #{instanceVolumesDeleteDatetime,jdbcType=TIMESTAMP}, #{instanceVolumesCurrentStatus,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.deployer.model.InstanceVolumes" useGeneratedKeys="true" keyProperty="instanceVolumesId">
+    insert into instance_volumes
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="instanceVolumesId != null" >
+        instance_volumes_id,
+      </if>
+      <if test="instanceCoreId != null" >
+        instance_core_id,
+      </if>
+      <if test="instanceVolumesType != null" >
+        instance_volumes_type,
+      </if>
+      <if test="instanceVolumesName != null" >
+        instance_volumes_name,
+      </if>
+      <if test="instanceVolumesMountPath != null" >
+        instance_volumes_mount_path,
+      </if>
+      <if test="instanceVolumesServer != null" >
+        instance_volumes_server,
+      </if>
+      <if test="instanceVolumesPath != null" >
+        instance_volumes_path,
+      </if>
+      <if test="instanceVolumesCreateDatetime != null" >
+        instance_volumes_create_datetime,
+      </if>
+      <if test="instanceVolumesDeleteDatetime != null" >
+        instance_volumes_delete_datetime,
+      </if>
+      <if test="instanceVolumesCurrentStatus != null" >
+        instance_volumes_current_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="instanceVolumesId != null" >
+        #{instanceVolumesId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceCoreId != null" >
+        #{instanceCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceVolumesType != null" >
+        #{instanceVolumesType,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesName != null" >
+        #{instanceVolumesName,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesMountPath != null" >
+        #{instanceVolumesMountPath,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesServer != null" >
+        #{instanceVolumesServer,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesPath != null" >
+        #{instanceVolumesPath,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesCreateDatetime != null" >
+        #{instanceVolumesCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceVolumesDeleteDatetime != null" >
+        #{instanceVolumesDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceVolumesCurrentStatus != null" >
+        #{instanceVolumesCurrentStatus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.deployer.model.InstanceVolumes" >
+    update instance_volumes
+    <set >
+      <if test="instanceCoreId != null" >
+        instance_core_id = #{instanceCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceVolumesType != null" >
+        instance_volumes_type = #{instanceVolumesType,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesName != null" >
+        instance_volumes_name = #{instanceVolumesName,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesMountPath != null" >
+        instance_volumes_mount_path = #{instanceVolumesMountPath,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesServer != null" >
+        instance_volumes_server = #{instanceVolumesServer,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesPath != null" >
+        instance_volumes_path = #{instanceVolumesPath,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceVolumesCreateDatetime != null" >
+        instance_volumes_create_datetime = #{instanceVolumesCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceVolumesDeleteDatetime != null" >
+        instance_volumes_delete_datetime = #{instanceVolumesDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceVolumesCurrentStatus != null" >
+        instance_volumes_current_status = #{instanceVolumesCurrentStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where instance_volumes_id = #{instanceVolumesId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.deployer.model.InstanceVolumes" >
+    update instance_volumes
+    set instance_core_id = #{instanceCoreId,jdbcType=INTEGER},
+      instance_volumes_type = #{instanceVolumesType,jdbcType=VARCHAR},
+      instance_volumes_name = #{instanceVolumesName,jdbcType=VARCHAR},
+      instance_volumes_mount_path = #{instanceVolumesMountPath,jdbcType=VARCHAR},
+      instance_volumes_server = #{instanceVolumesServer,jdbcType=VARCHAR},
+      instance_volumes_path = #{instanceVolumesPath,jdbcType=VARCHAR},
+      instance_volumes_create_datetime = #{instanceVolumesCreateDatetime,jdbcType=TIMESTAMP},
+      instance_volumes_delete_datetime = #{instanceVolumesDeleteDatetime,jdbcType=TIMESTAMP},
+      instance_volumes_current_status = #{instanceVolumesCurrentStatus,jdbcType=VARCHAR}
+    where instance_volumes_id = #{instanceVolumesId,jdbcType=INTEGER}
+  </update>
+</mapper>

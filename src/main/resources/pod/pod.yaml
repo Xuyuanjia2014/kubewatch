@@ -1,0 +1,8 @@
+apiVersion: kubernetes
+kind: Pod
+properties:
+  default: default
+handlers:
+- cn.abcsys.devops.v3.handler.pod.PodApplicationHandler
+- cn.abcsys.devops.v3.handler.pod.PodConfigurationHandler
+- cn.abcsys.devops.v3.handler.pod.PodStatusHandler

@@ -1,0 +1,58 @@
+apiVersion: v1 #固定选择，不能更改
+kind: Deployment  #不能修改，否则提示错误
+metadata:
+  name: deploy-tomcat # 可以填写一个名称后台会自动打上时间戳
+  namespace: default #不能变
+  labels
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      unique-id: rc01
+  template:
+    metadata:
+      name: label-tomcat #pod的名称，后面也会打上时间戳
+      namespace: default #不能变
+      labels:
+        unique-id: rc01
+    spec:
+      containers:
+      - name: container-tomcat #container的名称，后台会打上时间戳
+        image: tomcat:latest #镜像名称必填项
+        imagePullPolicy: IfNotPresent # Always或者IfNotPresent
+        resources:
+          limits: # cpu和内存，不能超过上下限
+            cpu: 1
+            memory: 1Gi
+          requests: # cpu和内存，不能超过上下限
+            cpu: 1
+            memory: 1024Mi
+        env: # 配置环境变量
+        - name: XYJ_PATH
+          value: /root
+        ports: #configPortsListString
+        - containerPort: 8080
+          protocol: TCP
+          name: tomcat-port
+        volumeMounts: # 指定的挂载
+        - mountPath: /home
+          name: home-volume
+        - mountPath: /opt
+          name: opt-volume
+      - name: busybox
+        image: abcsys.cn:5000/zbx-mysql:latest #镜像名称必填项
+        imagePullPolicy: IfNotPresent # Always或者IfNotPresent
+        resources:
+          limits: # cpu和内存，不能超过上下限
+            cpu: 1
+            memory: 1Gi
+          requests: # cpu和内存，不能超过上下限
+           cpu: 1
+           memory: 1024Mi
+      volumes:
+      - name: home-volume
+        hostPath:
+          path: /abcs/data
+      - name: opt-volume
+        hostPath:
+          path: /opt

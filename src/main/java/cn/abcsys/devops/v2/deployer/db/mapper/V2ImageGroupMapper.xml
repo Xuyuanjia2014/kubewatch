@@ -1,0 +1,717 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2ImageGroupMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2ImageGroup">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="version_id" jdbcType="INTEGER" property="versionId" />
+    <result column="application_id" jdbcType="INTEGER" property="applicationId" />
+    <result column="project_id" jdbcType="INTEGER" property="projectId" />
+    <result column="env_id" jdbcType="INTEGER" property="envId" />
+    <result column="version_group_id" jdbcType="INTEGER" property="versionGroupId" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="image_group_name" jdbcType="VARCHAR" property="imageGroupName" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="namespace" jdbcType="VARCHAR" property="namespace" />
+    <result column="api_version" jdbcType="VARCHAR" property="apiVersion" />
+    <result column="kind" jdbcType="VARCHAR" property="kind" />
+    <result column="replica" jdbcType="INTEGER" property="replica" />
+    <result column="parent_name" jdbcType="VARCHAR" property="parentName" />
+    <result column="master_ip" jdbcType="VARCHAR" property="masterIp" />
+    <result column="master_type" jdbcType="VARCHAR" property="masterType" />
+    <result column="master_port" jdbcType="VARCHAR" property="masterPort" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="image_group_strategy" jdbcType="VARCHAR" property="imageGroupStrategy" />
+    <result column="shrinkage_image_group_id" jdbcType="INTEGER" property="shrinkageImageGroupId" />
+    <result column="target_replica" jdbcType="INTEGER" property="targetReplica" />
+    <result column="old_replica" jdbcType="INTEGER" property="oldReplica" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, version_id, application_id, project_id, env_id, version_group_id, real_name,
+    uuid, image_group_name, description, namespace, api_version, kind, replica, parent_name,
+    master_ip, master_type, master_port, create_time, delete_time, update_time, status,
+    image_group_strategy, shrinkage_image_group_id, target_replica, old_replica
+  </sql>
+
+  <select id="getRunningDeploymentCountByVersionId" resultType="java.lang.Integer" >
+    select count(*)
+    from v2_image_group
+    where version_id = #{versionId,jdbcType=INTEGER}
+    AND status = "created"
+    AND delete_time is NULL
+  </select>
+
+  <select id="getRunningDeploymentSumByVersionId" resultType="java.lang.Integer" >
+    select v2_image_group.replica
+    from v2_image_group
+    where version_id = #{versionId,jdbcType=INTEGER}
+    AND status = "created"
+    AND delete_time is NULL
+  </select>
+
+  <select id="selectByFields" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_image_group
+    where id > 0
+    <if test="imageGroup.envId != null and imageGroup.envId>0" >
+      and env_id = #{imageGroup.envId,jdbcType=INTEGER}
+    </if>
+    <if test="imageGroup.applicationId != null and imageGroup.applicationId > 0" >
+      and application_id = #{imageGroup.applicationId,jdbcType=INTEGER}
+    </if>
+    <if test="imageGroup.versionId != null and imageGroup.versionId > 0" >
+      and version_id = #{imageGroup.versionId,jdbcType=INTEGER}
+    </if>
+    <if test="imageGroup.projectId != null and imageGroup.projectId > 0" >
+      and project_id = #{imageGroup.projectId,jdbcType=INTEGER}
+    </if>
+    <if test="imageGroup.status != null" >
+      and status = #{imageGroup.status,jdbcType=VARCHAR}
+    </if>
+    AND delete_time is NULL
+    limit #{offset,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_image_group
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByVersionId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_image_group
+    where version_id = #{versionId,jdbcType=INTEGER}
+    and status = "created"
+    AND delete_time is NULL
+  </select>
+
+  <select id="selectByRealName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_image_group
+    where real_name = #{realName,jdbcType=INTEGER}
+    and status = "created"
+    AND delete_time is NULL
+    limit 0,1
+  </select>
+
+  <select id="selectAllByVersionId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_image_group
+    where version_id = #{versionId,jdbcType=INTEGER}
+    AND delete_time is NULL
+  </select>
+
+  <select id="selectRuningVersionByApplicationId" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select
+    DISTINCT version_id
+    from v2_image_group
+    where application_id = #{appId,jdbcType=INTEGER}
+    and status = "created"
+    AND delete_time is NULL
+  </select>
+
+  <select id="selectDeadVersionByApplicationId" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select
+    DISTINCT version_id
+    from v2_image_group
+    where application_id = #{appId,jdbcType=INTEGER}
+    and status != "created"
+    AND delete_time is NULL
+  </select>
+
+  <select id="selectDeadAndCreatedVersionByVersionId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    DISTINCT version_id
+    from v2_image_group
+    where version_id = #{versionId,jdbcType=INTEGER}
+    and status = "created"
+    AND delete_time is NULL
+  </select>
+
+  <select id="selectVersionCountsByApplicationId" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select count(DISTINCT version_id)
+    from v2_image_group
+    where application_id = #{applicationId,jdbcType=INTEGER}
+    AND delete_time is NULL
+  </select>
+
+  <select id="selectCountByFields" resultType="java.lang.Integer">
+    select count(*)
+    from v2_image_group
+    where id > 0
+    <if test="imageGroup.envId != null and imageGroup.envId>0" >
+      and env_id = #{imageGroup.envId,jdbcType=INTEGER}
+    </if>
+    <if test="imageGroup.applicationId != null and imageGroup.applicationId > 0" >
+      and application_id = #{imageGroup.applicationId,jdbcType=INTEGER}
+    </if>
+    <if test="imageGroup.versionId != null and imageGroup.versionId > 0" >
+      and version_id = #{imageGroup.versionId,jdbcType=INTEGER}
+    </if>
+    <if test="imageGroup.projectId != null and imageGroup.projectId > 0" >
+      and project_id = #{imageGroup.projectId,jdbcType=INTEGER}
+    </if>
+    <if test="imageGroup.status != null" >
+      and status = #{imageGroup.status,jdbcType=VARCHAR}
+    </if>
+    AND delete_time is NULL
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_image_group
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2ImageGroup" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_image_group (id, version_id, application_id,
+      project_id, env_id, version_group_id,
+      real_name, uuid, image_group_name,
+      description, namespace, api_version,
+      kind, replica, parent_name,
+      master_ip, master_type, master_port,
+      create_time, delete_time, update_time,
+      status, image_group_strategy, shrinkage_image_group_id,
+      target_replica, old_replica)
+    values (#{id,jdbcType=INTEGER}, #{versionId,jdbcType=INTEGER}, #{applicationId,jdbcType=INTEGER},
+      #{projectId,jdbcType=INTEGER}, #{envId,jdbcType=INTEGER}, #{versionGroupId,jdbcType=INTEGER},
+      #{realName,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, #{imageGroupName,jdbcType=VARCHAR},
+      #{description,jdbcType=VARCHAR}, #{namespace,jdbcType=VARCHAR}, #{apiVersion,jdbcType=VARCHAR},
+      #{kind,jdbcType=VARCHAR}, #{replica,jdbcType=INTEGER}, #{parentName,jdbcType=VARCHAR},
+      #{masterIp,jdbcType=VARCHAR}, #{masterType,jdbcType=VARCHAR}, #{masterPort,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, #{deleteTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+      #{status,jdbcType=VARCHAR}, #{imageGroupStrategy,jdbcType=VARCHAR}, #{shrinkageImageGroupId,jdbcType=INTEGER},
+      #{targetReplica,jdbcType=INTEGER}, #{oldReplica,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2ImageGroup" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_image_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="versionId != null">
+        version_id,
+      </if>
+      <if test="applicationId != null">
+        application_id,
+      </if>
+      <if test="projectId != null">
+        project_id,
+      </if>
+      <if test="envId != null">
+        env_id,
+      </if>
+      <if test="versionGroupId != null">
+        version_group_id,
+      </if>
+      <if test="realName != null">
+        real_name,
+      </if>
+      <if test="uuid != null">
+        uuid,
+      </if>
+      <if test="imageGroupName != null">
+        image_group_name,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="namespace != null">
+        namespace,
+      </if>
+      <if test="apiVersion != null">
+        api_version,
+      </if>
+      <if test="kind != null">
+        kind,
+      </if>
+      <if test="replica != null">
+        replica,
+      </if>
+      <if test="parentName != null">
+        parent_name,
+      </if>
+      <if test="masterIp != null">
+        master_ip,
+      </if>
+      <if test="masterType != null">
+        master_type,
+      </if>
+      <if test="masterPort != null">
+        master_port,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="deleteTime != null">
+        delete_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="imageGroupStrategy != null">
+        image_group_strategy,
+      </if>
+      <if test="shrinkageImageGroupId != null">
+        shrinkage_image_group_id,
+      </if>
+      <if test="targetReplica != null">
+        target_replica,
+      </if>
+      <if test="oldReplica != null">
+        old_replica,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="versionId != null">
+        #{versionId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationId != null">
+        #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null">
+        #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="envId != null">
+        #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="versionGroupId != null">
+        #{versionGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="realName != null">
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null">
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="imageGroupName != null">
+        #{imageGroupName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null">
+        #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="apiVersion != null">
+        #{apiVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null">
+        #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="replica != null">
+        #{replica,jdbcType=INTEGER},
+      </if>
+      <if test="parentName != null">
+        #{parentName,jdbcType=VARCHAR},
+      </if>
+      <if test="masterIp != null">
+        #{masterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="masterType != null">
+        #{masterType,jdbcType=VARCHAR},
+      </if>
+      <if test="masterPort != null">
+        #{masterPort,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteTime != null">
+        #{deleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="imageGroupStrategy != null">
+        #{imageGroupStrategy,jdbcType=VARCHAR},
+      </if>
+      <if test="shrinkageImageGroupId != null">
+        #{shrinkageImageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="targetReplica != null">
+        #{targetReplica,jdbcType=INTEGER},
+      </if>
+      <if test="oldReplica != null">
+        #{oldReplica,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2ImageGroup">
+    update v2_image_group
+    <set>
+      <if test="versionId != null">
+        version_id = #{versionId,jdbcType=INTEGER},
+      </if>
+      <if test="applicationId != null">
+        application_id = #{applicationId,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="envId != null">
+        env_id = #{envId,jdbcType=INTEGER},
+      </if>
+      <if test="versionGroupId != null">
+        version_group_id = #{versionGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="realName != null">
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null">
+        uuid = #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="imageGroupName != null">
+        image_group_name = #{imageGroupName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null">
+        namespace = #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="apiVersion != null">
+        api_version = #{apiVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null">
+        kind = #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="replica != null">
+        replica = #{replica,jdbcType=INTEGER},
+      </if>
+      <if test="parentName != null">
+        parent_name = #{parentName,jdbcType=VARCHAR},
+      </if>
+      <if test="masterIp != null">
+        master_ip = #{masterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="masterType != null">
+        master_type = #{masterType,jdbcType=VARCHAR},
+      </if>
+      <if test="masterPort != null">
+        master_port = #{masterPort,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteTime != null">
+        delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+        image_group_strategy = #{imageGroupStrategy,jdbcType=VARCHAR},
+        shrinkage_image_group_id = #{shrinkageImageGroupId,jdbcType=INTEGER},
+        target_replica = #{targetReplica,jdbcType=INTEGER},
+        old_replica = #{oldReplica,jdbcType=INTEGER}
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2ImageGroup">
+    update v2_image_group
+    set version_id = #{versionId,jdbcType=INTEGER},
+      application_id = #{applicationId,jdbcType=INTEGER},
+      project_id = #{projectId,jdbcType=INTEGER},
+      env_id = #{envId,jdbcType=INTEGER},
+      version_group_id = #{versionGroupId,jdbcType=INTEGER},
+      real_name = #{realName,jdbcType=VARCHAR},
+      uuid = #{uuid,jdbcType=VARCHAR},
+      image_group_name = #{imageGroupName,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      namespace = #{namespace,jdbcType=VARCHAR},
+      api_version = #{apiVersion,jdbcType=VARCHAR},
+      kind = #{kind,jdbcType=VARCHAR},
+      replica = #{replica,jdbcType=INTEGER},
+      parent_name = #{parentName,jdbcType=VARCHAR},
+      master_ip = #{masterIp,jdbcType=VARCHAR},
+      master_type = #{masterType,jdbcType=VARCHAR},
+      master_port = #{masterPort,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=VARCHAR},
+      image_group_strategy = #{imageGroupStrategy,jdbcType=VARCHAR},
+      shrinkage_image_group_id = #{shrinkageImageGroupId,jdbcType=INTEGER},
+      target_replica = #{targetReplica,jdbcType=INTEGER},
+      old_replica = #{oldReplica,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+	  <update id="updateEnvIdByProjectId" parameterType="java.lang.Integer">
+	    update 
+	    	v2_image_group
+	    set
+	      	env_id = #{envId,jdbcType=INTEGER}
+	    where 
+	    	project_id = #{projectId,jdbcType=INTEGER}
+	  </update>
+  
+  <select id="insertOrUpdateImageGroup" statementType="CALLABLE" >
+    {call insertOrUpdateImageGroup(
+    #{version_id, mode=IN},
+    #{application_id, mode=IN},
+    #{project_id, mode=IN},
+    #{env_id, mode=IN},
+    #{base_name, mode=IN},
+    #{real_name, mode=IN},
+    #{uuid, mode=IN},
+    #{namespace, mode=IN},
+    #{apiversion, mode=IN},
+    #{kind, mode=IN},
+    #{replica, mode=IN},
+    #{app_name, mode=IN},
+    #{ip_host, mode=IN},
+    #{if_http, mode=IN},
+    #{api_port, mode=IN},
+    #{createtime, mode=IN},
+    #{image_group_strategy , mode=IN},
+    #{shrinkage_image_group_id , mode=IN},
+    #{target_replica , mode=IN},
+    #{old_replica , mode=IN},
+    #{ig_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrUpdateImageGroupIfNotExist" statementType="CALLABLE" >
+    {call insertOrUpdateImageGroupIfNotExist(
+    #{version_id, mode=IN},
+    #{application_id, mode=IN},
+    #{project_id, mode=IN},
+    #{env_id, mode=IN},
+    #{base_name, mode=IN},
+    #{real_name, mode=IN},
+    #{uuid, mode=IN},
+    #{namespace, mode=IN},
+    #{apiversion, mode=IN},
+    #{kind, mode=IN},
+    #{replica, mode=IN},
+    #{app_name, mode=IN},
+    #{ip_host, mode=IN},
+    #{if_http, mode=IN},
+    #{api_port, mode=IN},
+    #{createtime, mode=IN},
+    #{image_group_strategy, mode=IN},
+    #{shrinkage_image_group_id, mode=IN},
+    #{target_replica, mode=IN},
+    #{old_replica, mode=IN},
+    #{ig_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+
+  <select id="getImageGroup" statementType="CALLABLE" >
+    {call getImageGroup(
+    #{version_id, mode=IN},
+    #{application_id, mode=IN},
+    #{project_id, mode=IN},
+    #{env_id, mode=IN},
+    #{base_name, mode=IN},
+    #{real_name, mode=IN},
+    #{uuid, mode=IN},
+    #{namespace, mode=IN},
+    #{apiversion, mode=IN},
+    #{kind, mode=IN},
+    #{replica, mode=IN},
+    #{app_name, mode=IN},
+    #{ip_host, mode=IN},
+    #{if_http, mode=IN},
+    #{api_port, mode=IN},
+    #{createtime, mode=IN},
+    #{ig_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrGetEnvs" statementType="CALLABLE" >
+    {call insertOrGetEnvs(
+    #{image_id, mode=IN},
+    #{ekey, mode=IN},
+    #{evalue, mode=IN},
+    #{env_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrGetImage" statementType="CALLABLE" >
+    {call insertOrGetImage(
+    #{ig_id, mode=IN},
+    #{container_name, mode=IN},
+    #{image_name, mode=IN},
+    #{image_tag, mode=IN},
+    #{pull_secret, mode=IN},
+    #{image_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrGetLabel" statementType="CALLABLE" >
+    {call insertOrGetLabel(
+    #{ig_id, mode=IN},
+    #{type, mode=IN},
+    #{lkey, mode=IN},
+    #{lvalue, mode=IN},
+    #{label_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrGetMount" statementType="CALLABLE" >
+    {call insertOrGetMount(
+    #{image_id, mode=IN},
+    #{image_group_id, mode=IN},
+    #{version_id, mode=IN},
+    #{application_id, mode=IN},
+    #{project_id, mode=IN},
+    #{env_id, mode=IN},
+    #{mount_path, mode=IN},
+    #{mount_name, mode=IN},
+    #{mount_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrGetPorts" statementType="CALLABLE" >
+    {call insertOrGetPorts(
+    #{image_id, mode=IN},
+    #{pname, mode=IN},
+    #{protocol, mode=IN},
+    #{port_value, mode=IN},
+    #{port_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrGetProbes" statementType="CALLABLE" >
+    {call insertOrGetProbes(
+    #{image_id, mode=IN},
+    #{probe_type, mode=IN},
+    #{request_type, mode=IN},
+    #{probe_path, mode=IN},
+    #{probe_port, mode=IN},
+    #{scheme, mode=IN},
+    #{initial_delay_seconds, mode=IN},
+    #{timeout_seconds, mode=IN},
+    #{success_threshold, mode=IN},
+    #{failure_threshold, mode=IN},
+    #{probe_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrGetResource" statementType="CALLABLE" >
+    {call insertOrGetResource(
+    #{max_cpu, mode=IN},
+    #{max_mem, mode=IN},
+    #{min_cpu, mode=IN},
+    #{min_mem, mode=IN},
+    #{image_id, mode=IN},
+    #{image_group_id, mode=IN},
+    #{version_id, mode=IN},
+    #{application_id, mode=IN},
+    #{project_id, mode=IN},
+    #{env_id, mode=IN},
+    #{resource_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrGetVolume" statementType="CALLABLE" >
+    {call insertOrGetVolume(
+    #{path_or_config_name, mode=IN},
+    #{volume_name, mode=IN},
+    #{type, mode=IN},
+    #{createtime, mode=IN},
+    #{project_id, mode=IN},
+    #{application_id, mode=IN},
+    #{version_id, mode=IN},
+    #{ig_id, mode=IN},
+    #{env_id, mode=IN},
+    #{vol_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrUpdateContainer" statementType="CALLABLE" >
+    {call insertOrUpdateContainer(
+    #{pod_id, mode=IN},
+    #{image_group_id, mode=IN},
+    #{version_id, mode=IN},
+    #{application_id, mode=IN},
+    #{project_id, mode=IN},
+    #{env_id, mode=IN},
+    #{pod_name, mode=IN},
+    #{real_name, mode=IN},
+    #{container_name, mode=IN},
+    #{image_name_tag, mode=IN},
+    #{container_status, mode=IN},
+    #{limit_cpu, mode=IN},
+    #{limit_memory, mode=IN},
+    #{request_cpu, mode=IN},
+    #{request_memory, mode=IN},
+    #{host_ip, mode=IN},
+    #{host_name, mode=IN},
+    #{create_datetime, mode=IN},
+    #{start_datetime, mode=IN},
+    #{project_name, mode=IN},
+    #{uuid, mode=IN},
+    #{container_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="insertOrUpdatePod" statementType="CALLABLE" >
+    {call insertOrUpdatePod(
+    #{image_group_id, mode=IN},
+    #{uuid, mode=IN},
+    #{kind, mode=IN},
+    #{parent_name, mode=IN},
+    #{real_name, mode=IN},
+    #{namespace, mode=IN},
+    #{api_version, mode=IN},
+    #{resource_version, mode=IN},
+    #{pod_status, mode=IN},
+    #{pod_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="deletePodAndContainers" statementType="CALLABLE" >
+    {call deletePodAndContainers(
+    #{image_group_id, mode=IN},
+    #{real_name, mode=IN},
+    #{pod_id, jdbcType=INTEGER ,mode=OUT},
+    #{container_count, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="deletePodAndContainersUUid" statementType="CALLABLE" >
+    {call deletePodAndContainersUUid(
+    #{uuid , mode=IN},
+    #{real_name, mode=IN},
+    #{pod_id, jdbcType=INTEGER ,mode=OUT},
+    #{container_count, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="deleteVersionAndImageGroup" statementType="CALLABLE" >
+    {call deleteVersionAndImageGroup(
+    #{version_id, mode=IN},
+    #{ig_id, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+
+  <select id="deleteApplication" statementType="CALLABLE" >
+    {call deleteApplication(
+    #{application_id, mode=IN},
+    #{result, jdbcType=INTEGER ,mode=OUT}
+    )}
+  </select>
+</mapper>

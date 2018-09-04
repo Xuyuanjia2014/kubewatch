@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.deployer.dao.InstanceEventsMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.deployer.model.InstanceEvents" >
+    <id column="instance_events_id" property="instanceEventsId" jdbcType="INTEGER" />
+    <result column="instance_core_id" property="instanceCoreId" jdbcType="INTEGER" />
+    <result column="instance_events_source" property="instanceEventsSource" jdbcType="VARCHAR" />
+    <result column="instance_events_type" property="instanceEventsType" jdbcType="VARCHAR" />
+    <result column="instance_events_datetime" property="instanceEventsDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_events_original" property="instanceEventsOriginal" jdbcType="VARCHAR" />
+    <result column="instance_events_content" property="instanceEventsContent" jdbcType="VARCHAR" />
+    <result column="instance_events_comment" property="instanceEventsComment" jdbcType="VARCHAR" />
+    <result column="instance_events_create_datetime" property="instanceEventsCreateDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_events_delete_datetime" property="instanceEventsDeleteDatetime" jdbcType="TIMESTAMP" />
+    <result column="instance_events_current_status" property="instanceEventsCurrentStatus" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    instance_events_id, instance_core_id, instance_events_source, instance_events_type, 
+    instance_events_datetime, instance_events_original, instance_events_content, instance_events_comment, 
+    instance_events_create_datetime, instance_events_delete_datetime, instance_events_current_status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from instance_events
+    where instance_events_id = #{instanceEventsId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from instance_events
+    where instance_events_id = #{instanceEventsId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.deployer.model.InstanceEvents" >
+    insert into instance_events (instance_events_id, instance_core_id, 
+      instance_events_source, instance_events_type, 
+      instance_events_datetime, instance_events_original, 
+      instance_events_content, instance_events_comment, 
+      instance_events_create_datetime, instance_events_delete_datetime, 
+      instance_events_current_status)
+    values (#{instanceEventsId,jdbcType=INTEGER}, #{instanceCoreId,jdbcType=INTEGER}, 
+      #{instanceEventsSource,jdbcType=VARCHAR}, #{instanceEventsType,jdbcType=VARCHAR}, 
+      #{instanceEventsDatetime,jdbcType=TIMESTAMP}, #{instanceEventsOriginal,jdbcType=VARCHAR}, 
+      #{instanceEventsContent,jdbcType=VARCHAR}, #{instanceEventsComment,jdbcType=VARCHAR}, 
+      #{instanceEventsCreateDatetime,jdbcType=TIMESTAMP}, #{instanceEventsDeleteDatetime,jdbcType=TIMESTAMP}, 
+      #{instanceEventsCurrentStatus,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.deployer.model.InstanceEvents" >
+    insert into instance_events
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="instanceEventsId != null" >
+        instance_events_id,
+      </if>
+      <if test="instanceCoreId != null" >
+        instance_core_id,
+      </if>
+      <if test="instanceEventsSource != null" >
+        instance_events_source,
+      </if>
+      <if test="instanceEventsType != null" >
+        instance_events_type,
+      </if>
+      <if test="instanceEventsDatetime != null" >
+        instance_events_datetime,
+      </if>
+      <if test="instanceEventsOriginal != null" >
+        instance_events_original,
+      </if>
+      <if test="instanceEventsContent != null" >
+        instance_events_content,
+      </if>
+      <if test="instanceEventsComment != null" >
+        instance_events_comment,
+      </if>
+      <if test="instanceEventsCreateDatetime != null" >
+        instance_events_create_datetime,
+      </if>
+      <if test="instanceEventsDeleteDatetime != null" >
+        instance_events_delete_datetime,
+      </if>
+      <if test="instanceEventsCurrentStatus != null" >
+        instance_events_current_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="instanceEventsId != null" >
+        #{instanceEventsId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceCoreId != null" >
+        #{instanceCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceEventsSource != null" >
+        #{instanceEventsSource,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsType != null" >
+        #{instanceEventsType,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsDatetime != null" >
+        #{instanceEventsDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEventsOriginal != null" >
+        #{instanceEventsOriginal,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsContent != null" >
+        #{instanceEventsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsComment != null" >
+        #{instanceEventsComment,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsCreateDatetime != null" >
+        #{instanceEventsCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEventsDeleteDatetime != null" >
+        #{instanceEventsDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEventsCurrentStatus != null" >
+        #{instanceEventsCurrentStatus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.deployer.model.InstanceEvents" >
+    update instance_events
+    <set >
+      <if test="instanceCoreId != null" >
+        instance_core_id = #{instanceCoreId,jdbcType=INTEGER},
+      </if>
+      <if test="instanceEventsSource != null" >
+        instance_events_source = #{instanceEventsSource,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsType != null" >
+        instance_events_type = #{instanceEventsType,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsDatetime != null" >
+        instance_events_datetime = #{instanceEventsDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEventsOriginal != null" >
+        instance_events_original = #{instanceEventsOriginal,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsContent != null" >
+        instance_events_content = #{instanceEventsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsComment != null" >
+        instance_events_comment = #{instanceEventsComment,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceEventsCreateDatetime != null" >
+        instance_events_create_datetime = #{instanceEventsCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEventsDeleteDatetime != null" >
+        instance_events_delete_datetime = #{instanceEventsDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="instanceEventsCurrentStatus != null" >
+        instance_events_current_status = #{instanceEventsCurrentStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where instance_events_id = #{instanceEventsId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.deployer.model.InstanceEvents" >
+    update instance_events
+    set instance_core_id = #{instanceCoreId,jdbcType=INTEGER},
+      instance_events_source = #{instanceEventsSource,jdbcType=VARCHAR},
+      instance_events_type = #{instanceEventsType,jdbcType=VARCHAR},
+      instance_events_datetime = #{instanceEventsDatetime,jdbcType=TIMESTAMP},
+      instance_events_original = #{instanceEventsOriginal,jdbcType=VARCHAR},
+      instance_events_content = #{instanceEventsContent,jdbcType=VARCHAR},
+      instance_events_comment = #{instanceEventsComment,jdbcType=VARCHAR},
+      instance_events_create_datetime = #{instanceEventsCreateDatetime,jdbcType=TIMESTAMP},
+      instance_events_delete_datetime = #{instanceEventsDeleteDatetime,jdbcType=TIMESTAMP},
+      instance_events_current_status = #{instanceEventsCurrentStatus,jdbcType=VARCHAR}
+    where instance_events_id = #{instanceEventsId,jdbcType=INTEGER}
+  </update>
+</mapper>

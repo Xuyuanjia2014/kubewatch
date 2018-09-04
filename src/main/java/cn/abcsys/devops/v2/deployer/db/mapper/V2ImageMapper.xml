@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2ImageMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2Image" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="image_group_id" property="imageGroupId" jdbcType="INTEGER" />
+    <result column="container_name" property="containerName" jdbcType="VARCHAR" />
+    <result column="image_name" property="imageName" jdbcType="VARCHAR" />
+    <result column="image_tag" property="imageTag" jdbcType="VARCHAR" />
+    <result column="image_type" property="imageType" jdbcType="VARCHAR" />
+    <result column="pull_secret" property="pullSecret" jdbcType="VARCHAR" />
+    <result column="storage_time" property="storageTime" jdbcType="TIMESTAMP" />
+    <result column="build_time" property="buildTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, image_group_id, container_name, image_name, image_tag, image_type, pull_secret,
+    storage_time, build_time, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_image
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByImageGroupId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from v2_image
+    where image_group_id = #{imageGroupId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByVersionId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select DISTINCT t1.tcontainer_name
+    from v2_image t1
+    where t1.image_group_id IN (
+      select t2.id FROM  v2_image_group t2 WHERE t2.version_id = #{versionId,jdbcType=INTEGER} and t2.status = "created"
+    )
+    and t1.container_name is NOT  NULL
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_image
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Image" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_image (id, image_group_id, container_name,
+    image_name, image_tag, image_type,
+    pull_secret, storage_time, build_time,
+    status)
+    values (#{id,jdbcType=INTEGER}, #{imageGroupId,jdbcType=INTEGER}, #{containerName,jdbcType=VARCHAR},
+    #{imageName,jdbcType=VARCHAR}, #{imageTag,jdbcType=VARCHAR}, #{imageType,jdbcType=VARCHAR},
+    #{pullSecret,jdbcType=VARCHAR}, #{storageTime,jdbcType=TIMESTAMP}, #{buildTime,jdbcType=TIMESTAMP},
+    #{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Image" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_image
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="imageGroupId != null" >
+        image_group_id,
+      </if>
+      <if test="containerName != null" >
+        container_name,
+      </if>
+      <if test="imageName != null" >
+        image_name,
+      </if>
+      <if test="imageTag != null" >
+        image_tag,
+      </if>
+      <if test="imageType != null" >
+        image_type,
+      </if>
+      <if test="pullSecret != null" >
+        pull_secret,
+      </if>
+      <if test="storageTime != null" >
+        storage_time,
+      </if>
+      <if test="buildTime != null" >
+        build_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="imageGroupId != null" >
+        #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="containerName != null" >
+        #{containerName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageName != null" >
+        #{imageName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageTag != null" >
+        #{imageTag,jdbcType=VARCHAR},
+      </if>
+      <if test="imageType != null" >
+        #{imageType,jdbcType=VARCHAR},
+      </if>
+      <if test="pullSecret != null" >
+        #{pullSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="storageTime != null" >
+        #{storageTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buildTime != null" >
+        #{buildTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Image" >
+    update v2_image
+    <set >
+      <if test="imageGroupId != null" >
+        image_group_id = #{imageGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="containerName != null" >
+        container_name = #{containerName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageName != null" >
+        image_name = #{imageName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageTag != null" >
+        image_tag = #{imageTag,jdbcType=VARCHAR},
+      </if>
+      <if test="imageType != null" >
+        image_type = #{imageType,jdbcType=VARCHAR},
+      </if>
+      <if test="pullSecret != null" >
+        pull_secret = #{pullSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="storageTime != null" >
+        storage_time = #{storageTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buildTime != null" >
+        build_time = #{buildTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Image" >
+    update v2_image
+    set image_group_id = #{imageGroupId,jdbcType=INTEGER},
+    container_name = #{containerName,jdbcType=VARCHAR},
+    image_name = #{imageName,jdbcType=VARCHAR},
+    image_tag = #{imageTag,jdbcType=VARCHAR},
+    image_type = #{imageType,jdbcType=VARCHAR},
+    pull_secret = #{pullSecret,jdbcType=VARCHAR},
+    storage_time = #{storageTime,jdbcType=TIMESTAMP},
+    build_time = #{buildTime,jdbcType=TIMESTAMP},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

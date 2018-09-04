@@ -1,0 +1,8 @@
+apiVersion: openshift
+kind: DeploymentConfig
+properties:
+  default: default
+handlers:
+- cn.abcsys.devops.v3.handler.deploymentconfig.DcApplicationHandler
+- cn.abcsys.devops.v3.handler.deploymentconfig.DcConfigurationHandler
+- cn.abcsys.devops.v3.handler.utils.StatusHandler

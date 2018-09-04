@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2EventMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2Event" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="api_version" property="apiVersion" jdbcType="VARCHAR" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+    <result column="version_id" property="versionId" jdbcType="INTEGER" />
+    <result column="first_timestamp" property="firstTimestamp" jdbcType="VARCHAR" />
+    <result column="kind" property="kind" jdbcType="VARCHAR" />
+    <result column="message" property="message" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="namespace" property="namespace" jdbcType="VARCHAR" />
+    <result column="resource_version" property="resourceVersion" jdbcType="VARCHAR" />
+    <result column="self_link" property="selfLink" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="host" property="host" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, api_version, count, version_id, first_timestamp, kind, message, name, namespace,
+    resource_version, self_link, uid, reason, host, type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_event
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByVersionId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_event
+    where version_id = #{versionId,jdbcType=INTEGER}
+  </select>
+
+  <select id="getMaxResourceVersion" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List" />
+    from v2_event
+    WHERE version_id = #{versionId,jdbcType=INTEGER}
+    order by resource_version desc
+    limit 1
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_event
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Event" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_event (id, api_version, count,
+    version_id, first_timestamp, kind,
+    message, name, namespace,
+    resource_version, self_link, uid,
+    reason, host, type)
+    values (#{id,jdbcType=INTEGER}, #{apiVersion,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER},
+    #{versionId,jdbcType=INTEGER}, #{firstTimestamp,jdbcType=VARCHAR}, #{kind,jdbcType=VARCHAR},
+    #{message,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{namespace,jdbcType=VARCHAR},
+    #{resourceVersion,jdbcType=VARCHAR}, #{selfLink,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR},
+    #{reason,jdbcType=VARCHAR}, #{host,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Event" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_event
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="apiVersion != null" >
+        api_version,
+      </if>
+      <if test="count != null" >
+        count,
+      </if>
+      <if test="versionId != null" >
+        version_id,
+      </if>
+      <if test="firstTimestamp != null" >
+        first_timestamp,
+      </if>
+      <if test="kind != null" >
+        kind,
+      </if>
+      <if test="message != null" >
+        message,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="namespace != null" >
+        namespace,
+      </if>
+      <if test="resourceVersion != null" >
+        resource_version,
+      </if>
+      <if test="selfLink != null" >
+        self_link,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="host != null" >
+        host,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="apiVersion != null" >
+        #{apiVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null" >
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="versionId != null" >
+        #{versionId,jdbcType=INTEGER},
+      </if>
+      <if test="firstTimestamp != null" >
+        #{firstTimestamp,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null" >
+        #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null" >
+        #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null" >
+        #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceVersion != null" >
+        #{resourceVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="selfLink != null" >
+        #{selfLink,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="host != null" >
+        #{host,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Event" >
+    update v2_event
+    <set >
+      <if test="apiVersion != null" >
+        api_version = #{apiVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null" >
+        count = #{count,jdbcType=INTEGER},
+      </if>
+      <if test="versionId != null" >
+        version_id = #{versionId,jdbcType=INTEGER},
+      </if>
+      <if test="firstTimestamp != null" >
+        first_timestamp = #{firstTimestamp,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null" >
+        kind = #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null" >
+        message = #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="namespace != null" >
+        namespace = #{namespace,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceVersion != null" >
+        resource_version = #{resourceVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="selfLink != null" >
+        self_link = #{selfLink,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="host != null" >
+        host = #{host,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2Event" >
+    update v2_event
+    set api_version = #{apiVersion,jdbcType=VARCHAR},
+    count = #{count,jdbcType=INTEGER},
+    version_id = #{versionId,jdbcType=INTEGER},
+    first_timestamp = #{firstTimestamp,jdbcType=VARCHAR},
+    kind = #{kind,jdbcType=VARCHAR},
+    message = #{message,jdbcType=VARCHAR},
+    name = #{name,jdbcType=VARCHAR},
+    namespace = #{namespace,jdbcType=VARCHAR},
+    resource_version = #{resourceVersion,jdbcType=VARCHAR},
+    self_link = #{selfLink,jdbcType=VARCHAR},
+    uid = #{uid,jdbcType=VARCHAR},
+    reason = #{reason,jdbcType=VARCHAR},
+    host = #{host,jdbcType=VARCHAR},
+    type = #{type,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

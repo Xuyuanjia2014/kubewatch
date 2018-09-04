@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2SvcLabelsMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2SvcLabels" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="svc_id" property="svcId" jdbcType="INTEGER" />
+    <result column="label_type" property="labelType" jdbcType="VARCHAR" />
+    <result column="label_key" property="labelKey" jdbcType="VARCHAR" />
+    <result column="label_value" property="labelValue" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, svc_id, label_type, label_key, label_value, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_svc_labels
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllByServiceId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_svc_labels
+    where svc_id = #{serviceId,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteAllByServiceId" parameterType="java.lang.Integer" >
+    delete from v2_svc_labels
+    where svc_id = #{serviceId,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_svc_labels
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2SvcLabels" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_svc_labels (id, svc_id, label_type,
+    label_key, label_value, status
+    )
+    values (#{id,jdbcType=INTEGER}, #{svcId,jdbcType=INTEGER}, #{labelType,jdbcType=VARCHAR},
+    #{labelKey,jdbcType=VARCHAR}, #{labelValue,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2SvcLabels" useGeneratedKeys="true" keyProperty="id" >
+    insert into v2_svc_labels
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="svcId != null" >
+        svc_id,
+      </if>
+      <if test="labelType != null" >
+        label_type,
+      </if>
+      <if test="labelKey != null" >
+        label_key,
+      </if>
+      <if test="labelValue != null" >
+        label_value,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="svcId != null" >
+        #{svcId,jdbcType=INTEGER},
+      </if>
+      <if test="labelType != null" >
+        #{labelType,jdbcType=VARCHAR},
+      </if>
+      <if test="labelKey != null" >
+        #{labelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="labelValue != null" >
+        #{labelValue,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2SvcLabels" >
+    update v2_svc_labels
+    <set >
+      <if test="svcId != null" >
+        svc_id = #{svcId,jdbcType=INTEGER},
+      </if>
+      <if test="labelType != null" >
+        label_type = #{labelType,jdbcType=VARCHAR},
+      </if>
+      <if test="labelKey != null" >
+        label_key = #{labelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="labelValue != null" >
+        label_value = #{labelValue,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2SvcLabels" >
+    update v2_svc_labels
+    set svc_id = #{svcId,jdbcType=INTEGER},
+    label_type = #{labelType,jdbcType=VARCHAR},
+    label_key = #{labelKey,jdbcType=VARCHAR},
+    label_value = #{labelValue,jdbcType=VARCHAR},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.V2NetworkPortsMapper" >
+  <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPorts" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="network_id" property="networkId" jdbcType="INTEGER" />
+    <result column="port_name" property="portName" jdbcType="VARCHAR" />
+    <result column="protocol" property="protocol" jdbcType="VARCHAR" />
+    <result column="port_value" property="portValue" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, network_id, port_name, protocol, port_value, create_time, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_network_ports
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByNetworkPolicyId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from v2_network_ports
+    where network_id = #{networkPolicyId,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from v2_network_ports
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByNetworkPolicyId" parameterType="java.lang.Integer" >
+    delete from v2_network_ports
+    where network_id = #{networkPolicyId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPorts" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_network_ports (id, network_id, port_name,
+    protocol, port_value, create_time,
+    status)
+    values (#{id,jdbcType=INTEGER}, #{networkId,jdbcType=INTEGER}, #{portName,jdbcType=VARCHAR},
+    #{protocol,jdbcType=VARCHAR}, #{portValue,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+    #{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPorts" useGeneratedKeys="true" keyProperty="id">
+    insert into v2_network_ports
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="networkId != null" >
+        network_id,
+      </if>
+      <if test="portName != null" >
+        port_name,
+      </if>
+      <if test="protocol != null" >
+        protocol,
+      </if>
+      <if test="portValue != null" >
+        port_value,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="networkId != null" >
+        #{networkId,jdbcType=INTEGER},
+      </if>
+      <if test="portName != null" >
+        #{portName,jdbcType=VARCHAR},
+      </if>
+      <if test="protocol != null" >
+        #{protocol,jdbcType=VARCHAR},
+      </if>
+      <if test="portValue != null" >
+        #{portValue,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPorts" >
+    update v2_network_ports
+    <set >
+      <if test="networkId != null" >
+        network_id = #{networkId,jdbcType=INTEGER},
+      </if>
+      <if test="portName != null" >
+        port_name = #{portName,jdbcType=VARCHAR},
+      </if>
+      <if test="protocol != null" >
+        protocol = #{protocol,jdbcType=VARCHAR},
+      </if>
+      <if test="portValue != null" >
+        port_value = #{portValue,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.V2NetworkPorts" >
+    update v2_network_ports
+    set network_id = #{networkId,jdbcType=INTEGER},
+    port_name = #{portName,jdbcType=VARCHAR},
+    protocol = #{protocol,jdbcType=VARCHAR},
+    port_value = #{portValue,jdbcType=INTEGER},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

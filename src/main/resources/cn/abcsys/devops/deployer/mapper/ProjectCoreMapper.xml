@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.abcsys.devops.v2.deployer.db.dao.ProjectCoreMapper">
+    <resultMap id="BaseResultMap" type="cn.abcsys.devops.v2.deployer.db.model.ProjectCore">
+        <id column="project_id" property="projectId" jdbcType="INTEGER"/>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"/>
+        <result column="project_description" property="projectDescription" jdbcType="VARCHAR"/>
+        <result column="project_runtime_id" property="projectRuntimeId" jdbcType="INTEGER"/>
+        <result column="project_comments" property="projectComments" jdbcType="VARCHAR"/>
+        <result column="project_create_datetime" property="projectCreateDatetime" jdbcType="TIMESTAMP"/>
+        <result column="project_delete_datetime" property="projectDeleteDatetime" jdbcType="TIMESTAMP"/>
+        <result column="project_current_status" property="projectCurrentStatus" jdbcType="VARCHAR"/>
+        <result column="project_namespace" property="projectNamespace" jdbcType="VARCHAR"/>
+        <result column="cluster_id" property="clusterId" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        project_id,project_name, project_description, project_runtime_id, project_comments, project_create_datetime,
+        project_delete_datetime, project_current_status, project_namespace
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from project_core
+        where project_id = #{projectId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectAllByEnvId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from project_core
+        where project_runtime_id = #{envId,jdbcType=INTEGER}
+        and project_current_status != "invalid"
+        limit #{start,jdbcType=INTEGER}, #{num,jdbcType=INTEGER}
+    </select>
+
+    <select id="getTotalNumOfProjectByEnvId" resultType="java.lang.Integer">
+        select count(*)
+        from project_core t1
+        where project_runtime_id = #{envId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByFields" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from project_core
+        where 
+        	project_id > 0
+         <if test="record.clusterId != null">
+            and cluster_id = #{record.clusterId,jdbcType=INTEGER}
+        </if>
+         <if test="record.projectRuntimeId != null">
+            and project_runtime_id = #{record.projectRuntimeId,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectCurrentStatus != null">
+            and project_current_status = #{record.projectCurrentStatus,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectDescription != null">
+            and project_description like '%${record.projectDescription}%'
+        </if>
+        <if test="record.projectName != null">
+            and project_name like '%${record.projectName}%'
+        </if>
+        <if test="projectIds != null and projectIds.length > 0">
+            and project_id IN
+            <foreach collection="projectIds" item="eachId" index="index"
+                     open="(" close=")" separator=",">
+                #{eachId,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        ORDER BY project_name ASC
+        limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByFieldsWithAppName" resultMap="BaseResultMap">
+        select
+        DISTINCT p.project_id,p.project_name, p.project_description, p.project_runtime_id, p.project_comments, p.project_create_datetime,
+        p.project_delete_datetime, p.project_current_status, p.project_namespace
+        from project_core p LEFT JOIN v2_application a ON p.project_id = a.project_id
+        where p.project_id > 0
+        <if test="record.clusterId != null">
+            and cluster_id = #{record.clusterId,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectRuntimeId != null">
+            and p.project_runtime_id = #{record.projectRuntimeId,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectCurrentStatus != null">
+            and p.project_current_status = #{record.projectCurrentStatus,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectDescription != null">
+            and p.project_description like '%${record.projectDescription}%'
+        </if>
+        <if test="record.projectName != null">
+            and project_name like '%${record.projectName}%'
+        </if>
+        <if test="projectIds != null and projectIds.length > 0">
+            and p.project_id IN
+            <foreach collection="projectIds" item="eachId" index="index"
+                     open="(" close=")" separator=",">
+                #{eachId,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="appName != null">
+            and a.application_name LIKE CONCAT('%', #{appName,jdbcType=VARCHAR}, '%')
+        </if>
+       ORDER BY project_name ASC
+        limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectCountByFields" resultType="java.lang.Integer">
+        select
+        count(*)
+        from project_core
+        where
+        	project_id > 0
+        and
+    		project_current_status = "created"
+        <if test="record.projectRuntimeId != null">
+            and project_runtime_id = #{record.projectRuntimeId,jdbcType=INTEGER}
+        </if>
+        <if test="record.clusterId != null">
+            and cluster_id = #{record.clusterId,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectCurrentStatus != null">
+            and project_current_status = #{record.projectCurrentStatus,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectDescription != null">
+            and project_description like '%${record.projectDescription}%'
+        </if>
+        <if test="record.projectName != null">
+            and project_name like '%${record.projectName}%'
+        </if>
+        <if test="projectIds != null and projectIds.length > 0">
+            and project_id IN
+            <foreach collection="projectIds" item="eachId" index="index"
+                     open="(" close=")" separator=",">
+                #{eachId,jdbcType=INTEGER}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="selectCountByFieldsWithAppName" resultType="java.lang.Integer">
+        select
+        count(DISTINCT p.project_id)
+        from project_core p LEFT JOIN v2_application a ON p.project_id = a.project_id
+        where p.project_id > 0
+        <if test="record.clusterId != null">
+            and cluster_id = #{record.clusterId,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectRuntimeId != null">
+            and p.project_runtime_id = #{record.projectRuntimeId,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectCurrentStatus != null">
+            and p.project_current_status = #{record.projectCurrentStatus,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectDescription != null">
+            and p.project_description like '%${record.projectDescription}%'
+        </if>
+        <if test="record.projectName != null">
+            and project_name like '%${record.projectName}%'
+        </if>
+        <if test="projectIds != null and projectIds.length > 0">
+            and p.project_id IN
+            <foreach collection="projectIds" item="eachId" index="index"
+                     open="(" close=")" separator=",">
+                #{eachId,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="appName != null">
+            and a.application_name LIKE CONCAT('%', #{appName,jdbcType=VARCHAR}, '%')
+        </if>
+        ORDER BY p.project_id DESC
+    </select>
+
+    <select id="selectByFieldsNew" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from project_core
+        where project_id > 0
+        <if test="record.projectRuntimeId != null">
+            and project_runtime_id = #{record.projectRuntimeId,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectCurrentStatus != null">
+            and project_current_status = #{record.projectCurrentStatus,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectDescription != null">
+            and project_description like '%${record.projectDescription}%'
+        </if>
+        <if test="record.projectName != null">
+            and project_name like '%${record.projectName}%'
+        </if>
+        <if test="projectIds != null and projectIds.length > 0">
+            and project_id IN
+            <foreach collection="projectIds" item="eachId" index="index"
+                     open="(" close=")" separator=",">
+                #{eachId,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="applicationCoreRename != null">
+            and (
+            select count(*) from application_core
+            where application_core_rename like '%${applicationCoreRename}%'
+            and application_core_delete_datetime is NULL
+            and application_project_id = project_id
+            ) > 0
+        </if>
+        ORDER BY project_id DESC
+        limit #{page,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectCountByFieldsNew" resultType="java.lang.Integer">
+        select
+        count(*)
+        from project_core
+        where project_id > 0
+        <if test="record.projectRuntimeId != null">
+            and project_runtime_id = #{record.projectRuntimeId,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectCurrentStatus != null">
+            and project_current_status = #{record.projectCurrentStatus,jdbcType=INTEGER}
+        </if>
+        <if test="record.projectDescription != null">
+            and project_description like '%${record.projectDescription}%'
+        </if>
+        <if test="record.projectName != null">
+            and project_name like '%${record.projectName}%'
+        </if>
+        <if test="projectIds != null and projectIds.length > 0">
+            and project_id IN
+            <foreach collection="projectIds" item="eachId" index="index"
+                     open="(" close=")" separator=",">
+                #{eachId,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="applicationCoreRename != null">
+            and (
+            select count(*) from application_core
+            where application_core_rename like '%${applicationCoreRename}%'
+            and application_core_delete_datetime is NULL
+            and application_project_id = project_id
+            ) > 0
+        </if>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from project_core
+        where project_id = #{projectId,jdbcType=INTEGER}
+    </delete>
+
+
+    <insert id="insert" parameterType="cn.abcsys.devops.v2.deployer.db.model.ProjectCore">
+        insert into project_core (project_id,project_name, project_description, project_runtime_id,
+        project_comments, project_create_datetime,
+        project_delete_datetime, project_current_status
+        )
+        values (#{projectId,jdbcType=INTEGER},#{projectName,jdbcType=INTEGER}, #{projectDescription,jdbcType=VARCHAR}, #{projectRuntimeId,jdbcType=INTEGER},
+        #{projectComments,jdbcType=VARCHAR}, #{projectCreateDatetime,jdbcType=TIMESTAMP},
+        #{projectDeleteDatetime,jdbcType=TIMESTAMP}, #{projectCurrentStatus,jdbcType=VARCHAR}
+        )
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="cn.abcsys.devops.v2.deployer.db.model.ProjectCore">
+        update project_core
+        <set>
+            <if test="projectName != null">
+                project_name = #{projectName,jdbcType=VARCHAR},
+            </if>
+            <if test="projectDescription != null">
+                project_description = #{projectDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="projectRuntimeId != null">
+                project_runtime_id = #{projectRuntimeId,jdbcType=INTEGER},
+            </if>
+            <if test="projectComments != null">
+                project_comments = #{projectComments,jdbcType=VARCHAR},
+            </if>
+            <if test="projectCreateDatetime != null">
+                project_create_datetime = #{projectCreateDatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="projectDeleteDatetime != null">
+                project_delete_datetime = #{projectDeleteDatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="projectCurrentStatus != null">
+                project_current_status = #{projectCurrentStatus,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where project_id = #{projectId,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="cn.abcsys.devops.v2.deployer.db.model.ProjectCore">
+        update project_core
+        set project_description = #{projectDescription,jdbcType=VARCHAR},
+        project_runtime_id = #{projectRuntimeId,jdbcType=INTEGER},
+        project_comments = #{projectComments,jdbcType=VARCHAR},
+        project_create_datetime = #{projectCreateDatetime,jdbcType=TIMESTAMP},
+        project_delete_datetime = #{projectDeleteDatetime,jdbcType=TIMESTAMP},
+        project_current_status = #{projectCurrentStatus,jdbcType=VARCHAR}
+        where project_id = #{projectId,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectByNamespace" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from project_core
+        where project_id > 0
+        <if test="projectName != null">
+            and project_name = #{projectName,jdbcType=VARCHAR}
+        </if>
+        <if test="projectRuntimeId != null">
+            and project_runtime_id = #{projectRuntimeId,jdbcType=INTEGER}
+        </if>
+        and project_delete_datetime is null and project_current_status = "created"
+    </select>
+
+    <select id="insertOrGetProjectCore" statementType="CALLABLE" >
+        {call insertOrGetProjectCore(
+        #{namespace, mode=IN},
+        #{project_desc, mode=IN},
+        #{cluster_id, mode=IN},
+        #{default_env_id, mode=IN},
+        #{env_id, jdbcType=INTEGER ,mode=IN},
+        #{createtime, mode=IN},
+        #{project_id, jdbcType=INTEGER ,mode=OUT}
+        )}
+    </select>
+
+    <select id="insertOrGetProjectCoreIfNotExist" statementType="CALLABLE" >
+        {call insertOrGetProjectCoreIfNotExist(
+        #{namespace, mode=IN},
+        #{project_desc, mode=IN},
+        #{cluster_id, mode=IN},
+        #{default_env_id, mode=IN},
+        #{env_id, jdbcType=INTEGER ,mode=IN},
+        #{createtime, mode=IN},
+        #{project_id, jdbcType=INTEGER ,mode=OUT}
+        )}
+    </select>
+
+    <select id="checkProjectCore" statementType="CALLABLE" >
+        {call checkProjectCore(
+        #{namespace, mode=IN},
+        #{cluster_id, mode=IN},
+        #{project_id, jdbcType=INTEGER ,mode=OUT},
+        #{env_id, jdbcType=INTEGER ,mode=OUT}
+        )}
+    </select>
+
+    <select id="deleteProjectCore" statementType="CALLABLE" >
+        {call deleteProjectCore(
+        #{namespace, mode=IN},
+        #{cluster_id, mode=IN},
+        #{result, jdbcType=INTEGER ,mode=OUT}
+        )}
+    </select>
+
+    <select id="selectAllProjects" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from project_core
+    </select>
+    <select id="getProjectNamesByEnvId" resultType="java.lang.String">
+  		select
+    		project_name
+   		from
+    		project_core
+    	where
+    		project_id > 0
+    		and project_current_status = "created"
+  		and
+  			project_runtime_id = #{envId,jdbcType=INTEGER}
+  </select>
+     <select id="getProjectNames" resultType="java.lang.String">
+    select
+    	project_name
+    from 
+    	project_core
+    where 
+    	project_id > 0
+    and 
+    	project_current_status = "created"
+    <if test="projectIds != null and projectIds.size() > 0">
+      and 
+      	project_id IN
+      <foreach collection="projectIds" item="eachId" index="index"
+               open="(" close=")" separator=",">
+        #{eachId,jdbcType=INTEGER}
+      </foreach>
+    </if>
+  </select>
+  <select id="selectIsExist" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from
+    	project_core
+    where
+    	project_id > 0
+    and
+    	project_current_status = "created"
+    <if test="projectName != null">
+      and project_name = #{projectName,jdbcType=VARCHAR}
+    </if>
+    <if test="clusterId != null">
+      and cluster_id = #{clusterId,jdbcType=INTEGER}
+    </if>
+   <!--  <if test="projectRuntimeId != null">
+      and project_runtime_id = #{projectRuntimeId,jdbcType=INTEGER}
+    </if> -->
+    <if test="projectId != null">
+      and project_id = #{projectId,jdbcType=INTEGER}
+    </if>
+  </select>
+  <insert id="insertProject" parameterType="cn.abcsys.devops.v2.deployer.db.model.ProjectCore" useGeneratedKeys="true"
+          keyProperty="projectId">
+    insert into project_core
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="projectName != null">
+        project_name,
+      </if>
+      <if test="projectDescription != null">
+        project_description,
+      </if>
+      <if test="projectRuntimeId != null">
+        project_runtime_id,
+      </if>
+      <if test="projectComments != null">
+        project_comments,
+      </if>
+      <if test="projectCreateDatetime != null">
+        project_create_datetime,
+      </if>
+      <if test="projectDeleteDatetime != null">
+        project_delete_datetime,
+      </if>
+      <if test="projectCurrentStatus != null">
+        project_current_status,
+      </if>
+      <if test="projectNamespace != null">
+        project_namespace,
+      </if>
+      <if test="clusterId != null">
+        cluster_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="projectName != null">
+        #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="projectDescription != null">
+        #{projectDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="projectRuntimeId != null">
+        #{projectRuntimeId,jdbcType=INTEGER},
+      </if>
+      <if test="projectComments != null">
+        #{projectComments,jdbcType=VARCHAR},
+      </if>
+      <if test="projectCreateDatetime != null">
+        #{projectCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="projectDeleteDatetime != null">
+        #{projectDeleteDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="projectCurrentStatus != null">
+        #{projectCurrentStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="projectNamespace != null">
+        #{projectNamespace,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterId != null">
+         #{clusterId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+</mapper>
